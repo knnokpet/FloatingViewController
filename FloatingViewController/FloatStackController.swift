@@ -33,6 +33,20 @@ class FloatStackController: NSObject {
         return parameters[0]
     }
     
+    internal var previousFloatingViewController: UIViewController? {
+        guard viewControllers.count > 1 else {
+            return nil
+        }
+        return viewControllers[1]
+    }
+    
+    internal var previousParameter: FloatingViewParameter? {
+        guard parameters.count > 1 else {
+            return nil
+        }
+        return parameters[1]
+    }
+    
     var numberOfViewControllers: Int {
         return self.viewControllers.count
     }
@@ -318,14 +332,44 @@ class FloatViewTransitioCoordinator: NSObject, FloatViewTransitionObservable, Fl
                 return
         }
         
+        
+        
+        let shadowView: UIView? = {
+            if
+                let previous = self.stackController?.previousFloatingViewController,
+                let previousParameter = self.stackController?.previousParameter
+            {
+                let shadowView = UIView()
+                shadowView.translatesAutoresizingMaskIntoConstraints = false
+                parent.view.insertSubview(shadowView, belowSubview: currentFloatingViewController.view)
+                shadowView.backgroundColor = .black
+                shadowView.layer.cornerRadius = 10.0
+                shadowView.layer.masksToBounds = true
+                shadowView.layer.opacity = 0.0
+                shadowView.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor, constant: 0.0).isActive = true
+                shadowView.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor, constant: 0.0).isActive = true
+                shadowView.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
+                shadowView.heightAnchor.constraint(equalToConstant: (previousParameter.floatingViewHeightConstraint?.constant ?? 0)).isActive = true
+                return shadowView
+            }
+            return nil
+        }()
+        
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
         
         parameter.floatingViewHeightConstraint?.constant = tallerHeight
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
+            
+            shadowView?.layer.opacity = 0.1
             self.stackController?.parentViewController?.view.layoutIfNeeded()
+            
         }, completion: { finished in
+            if finished {
+                shadowView?.removeFromSuperview()
+                self.stackController?.previousFloatingViewController?.view.isHidden = true
+            }
             completionHandler?(finished)
         })
     }
@@ -340,6 +384,33 @@ class FloatViewTransitioCoordinator: NSObject, FloatViewTransitionObservable, Fl
                 return
         }
         
+        let shadowView: UIView? = {
+            if
+                let previous = self.stackController?.previousFloatingViewController,
+                let previousParameter = self.stackController?.previousParameter
+            {
+                let shadowView = UIView()
+                shadowView.translatesAutoresizingMaskIntoConstraints = false
+                parent.view.insertSubview(shadowView, belowSubview: currentFloatingViewController.view)
+                shadowView.backgroundColor = .black
+                shadowView.layer.cornerRadius = 10.0
+                shadowView.layer.masksToBounds = true
+                shadowView.layer.opacity = 0.1
+                shadowView.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor, constant: 0.0).isActive = true
+                shadowView.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor, constant: 0.0).isActive = true
+                shadowView.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
+                shadowView.heightAnchor.constraint(equalToConstant: (previousParameter.floatingViewHeightConstraint?.constant ?? 0)).isActive = true
+                return shadowView
+            }
+            return nil
+        }()
+        // By calling layoutIfNeeded at once, let view layout be confirmed
+        self.stackController?.parentViewController?.view.layoutIfNeeded()
+        
+        if let _ = shadowView {
+            self.stackController?.previousFloatingViewController?.view.isHidden = false
+        }
+        
         let activeConstraints = [
             parameter.floatingViewTopSpaceConstraint, parameter.floatingViewShorterHeightConstraint, parameter.floatingViewTallerHeightConstraint
             ]
@@ -350,6 +421,7 @@ class FloatViewTransitioCoordinator: NSObject, FloatViewTransitionObservable, Fl
         parameter.floatingViewHeightConstraint?.constant = 0
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [], animations: {
+            shadowView?.layer.opacity = 0.0
             self.stackController?.parentViewController?.view.layoutIfNeeded()
         }, completion: { finished in
             completionHandler?(finished)
