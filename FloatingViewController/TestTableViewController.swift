@@ -1,5 +1,8 @@
 import UIKit
 
+#warning("middle, short mode の時に、スクロールをさせない処理を追加しないといけない")
+#warning("current の remove 後に、後ろのビューの表示が current と合わない")
+
 class TestTableViewController: FloatingViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate {
     
     let datasource: [String] = [
