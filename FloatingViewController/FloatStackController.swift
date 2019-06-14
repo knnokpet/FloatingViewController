@@ -10,12 +10,12 @@ let shorterHeight: CGFloat = 120
 class FloatStackController: NSObject {
     
     weak var parentViewController: UIViewController?
-    var translationController: FloatViewTranslationController?
+    var transitionCoordinator: FloatViewTransitioCoordinator?
     
     init(parentViewController: UIViewController) {
         super.init()
         self.parentViewController = parentViewController
-        self.translationController = FloatViewTranslationController(stackController: self)
+        self.transitionCoordinator = FloatViewTransitioCoordinator(stackController: self)
     }
     
     
@@ -55,19 +55,19 @@ class FloatStackController: NSObject {
         //TODO: REFACTOR
         let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.safeAreaInsets.top)
         topSpaceConstraint.priority = .defaultHigh
-        topSpaceConstraint.isActive = true
+        topSpaceConstraint.isActive = false
         
         let shorterHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: shorterHeight)
         shorterHeightConstraint.priority = .defaultHigh
-        shorterHeightConstraint.isActive = true
+        shorterHeightConstraint.isActive = false
         
-        let strechingHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: tallerHeight)
+        let strechingHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: 0.0)
         strechingHeightConstraint.priority = .defaultHigh
         strechingHeightConstraint.isActive = true
         
         let tallerHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: tallerHeight)
         tallerHeightConstraint.priority = .defaultHigh
-        tallerHeightConstraint.isActive = true
+        tallerHeightConstraint.isActive = false
         
         let parameter: FloatingViewParameter = FloatingViewParameter(floatingViewShorterHeightConstraint: shorterHeightConstraint, floatingViewTallerHeightConstraint: tallerHeightConstraint, floatingViewHeightConstraint: strechingHeightConstraint, floatingViewTopSpaceConstraint: topSpaceConstraint)
         self.add(viewController: viewController, parameter: parameter)
@@ -76,14 +76,14 @@ class FloatStackController: NSObject {
         viewController.view.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0.0).isActive = true
         viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
         
-//        self.translationController?.present(completionHandler: { (finished) in
-//            if finished {
-//
-//            }
-//        })
-        
         viewController.didMove(toParent: parent)
         
+        self.transitionCoordinator?.present(completionHandler: { (finished) in
+            if finished {
+                
+            }
+        })
+
     }
     
     private func add(viewController: UIViewController, parameter: FloatingViewParameter) {
@@ -91,29 +91,39 @@ class FloatStackController: NSObject {
         self.parameters.insert(parameter, at: 0)
     }
     
+    //TODO: Fix a crash bug. Remove while adding animation, parameters store wrong value.
     internal func removeCurrentViewController() {
+        
         guard
-            let parent = self.parentViewController else
-        {
-                return
-        }
+            self.viewControllers.count > 0,
+            self.parameters.count > 0
+            else
+        { return }
+        
+        self.transitionCoordinator?.remove(completionHandler: { (isFinished) in
+            if isFinished {
+                
+            }
+            self.viewControllers.remove(at: 0)
+            self.parameters.remove(at: 0)
+        })
     }
 }
 
 
-protocol FloatViewTranslationObservable {
+protocol FloatViewTransitionObservable {
     func handleFloatViewControllerBegan(_ notification: Notification)
     func handleFloatViewControllerTranslation(_ notification: Notification)
     func handleFloatViewControllerEnd(_ notification: Notification)
 }
 
-protocol FloatViewTranslationable {
+protocol FloatViewTransitionable {
     func present(completionHandler: ((Bool) -> Void)?)
     func remove(completionHandler: ((Bool) -> Void)?)
     func move(mode: FloatingMode)
 }
 
-class FloatViewTranslationController: NSObject, FloatViewTranslationObservable, FloatViewTranslationable {
+class FloatViewTransitioCoordinator: NSObject, FloatViewTransitionObservable, FloatViewTransitionable {
     
     weak var stackController: FloatStackController?
     
@@ -308,10 +318,11 @@ class FloatViewTranslationController: NSObject, FloatViewTranslationObservable, 
                 return
         }
         
-        let tallerHeightConstraint =  currentFloatingViewController.view.heightAnchor.constraint(equalToConstant: 0.0)
-        tallerHeightConstraint.priority = .defaultHigh
-        tallerHeightConstraint.isActive = true
-        parameter.floatingViewTallerHeightConstraint = tallerHeightConstraint
+        // By calling layoutIfNeeded at once, let view layout be confirmed
+        self.stackController?.parentViewController?.view.layoutIfNeeded()
+        
+        parameter.floatingViewHeightConstraint?.constant = tallerHeight
+        
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
             self.stackController?.parentViewController?.view.layoutIfNeeded()
         }, completion: { finished in
@@ -321,5 +332,27 @@ class FloatViewTranslationController: NSObject, FloatViewTranslationObservable, 
     
     func remove(completionHandler: ((Bool) -> Void)?) {
         
+        guard
+            let parent = self.stackController?.parentViewController,
+            let currentFloatingViewController = self.stackController?.currentFloatingViewController,
+            var parameter = self.stackController?.currentParameter
+            else {
+                return
+        }
+        
+        let activeConstraints = [
+            parameter.floatingViewTopSpaceConstraint, parameter.floatingViewShorterHeightConstraint, parameter.floatingViewTallerHeightConstraint
+            ]
+            .compactMap { $0 }
+            .filter { $0.isActive == true }
+        
+        NSLayoutConstraint.deactivate(activeConstraints)
+        parameter.floatingViewHeightConstraint?.constant = 0
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [], animations: {
+            self.stackController?.parentViewController?.view.layoutIfNeeded()
+        }, completion: { finished in
+            completionHandler?(finished)
+        })
     }
 }

@@ -25,7 +25,12 @@ class ViewController: UIViewController {
             break
         }
     }
-
+    
+    
+    @IBAction func remove(_ sender: Any) {
+        self.floatStackController.removeCurrentViewController()
+    }
+    
     @IBAction func show(_ sender: Any) {
         
         let test = UIStoryboard(name: "TestTableViewController", bundle: nil).instantiateInitialViewController() as! TestTableViewController
@@ -35,15 +40,15 @@ class ViewController: UIViewController {
     }
     
     @IBAction func moveToMiddle(_ sender: Any) {
-        self.floatStackController.translationController?.move(mode: .middle)
+        self.floatStackController.transitionCoordinator?.move(mode: .middle)
     }
     
     @IBAction func moveToFullScreen(_ sender: Any) {
-        self.floatStackController.translationController?.move(mode: .fullScreen)
+        self.floatStackController.transitionCoordinator?.move(mode: .fullScreen)
     }
     
     @IBAction func moveTobottom(_ sender: Any) {
-        self.floatStackController.translationController?.move(mode: .bottom)
+        self.floatStackController.transitionCoordinator?.move(mode: .bottom)
     }
     
 }
