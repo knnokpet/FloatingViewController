@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		F703AFE222B27241003AE44A /* FloatStackController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE122B27241003AE44A /* FloatStackController.swift */; };
 		F703AFE422B272B8003AE44A /* FloatingViewParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE322B272B8003AE44A /* FloatingViewParameter.swift */; };
+		F703AFE622B390F6003AE44A /* FloatViewTransitionObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE522B390F6003AE44A /* FloatViewTransitionObservable.swift */; };
+		F703AFE822B39115003AE44A /* FloatViewTransitionable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE722B39115003AE44A /* FloatViewTransitionable.swift */; };
+		F703AFEA22B39142003AE44A /* FloatViewTransitioCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE922B39142003AE44A /* FloatViewTransitioCoordinator.swift */; };
 		F7AFB7E822A39CB100DE2D44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7E722A39CB100DE2D44 /* AppDelegate.swift */; };
 		F7AFB7EA22A39CB100DE2D44 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7E922A39CB100DE2D44 /* ViewController.swift */; };
 		F7AFB7ED22A39CB100DE2D44 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AFB7EB22A39CB100DE2D44 /* Main.storyboard */; };
@@ -24,6 +27,9 @@
 /* Begin PBXFileReference section */
 		F703AFE122B27241003AE44A /* FloatStackController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatStackController.swift; sourceTree = "<group>"; };
 		F703AFE322B272B8003AE44A /* FloatingViewParameter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingViewParameter.swift; sourceTree = "<group>"; };
+		F703AFE522B390F6003AE44A /* FloatViewTransitionObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewTransitionObservable.swift; sourceTree = "<group>"; };
+		F703AFE722B39115003AE44A /* FloatViewTransitionable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewTransitionable.swift; sourceTree = "<group>"; };
+		F703AFE922B39142003AE44A /* FloatViewTransitioCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewTransitioCoordinator.swift; sourceTree = "<group>"; };
 		F7AFB7E422A39CB100DE2D44 /* FloatingViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FloatingViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7AFB7E722A39CB100DE2D44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F7AFB7E922A39CB100DE2D44 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -49,6 +55,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F703AFEB22B3917B003AE44A /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				F703AFE722B39115003AE44A /* FloatViewTransitionable.swift */,
+				F703AFE522B390F6003AE44A /* FloatViewTransitionObservable.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		F703AFEC22B39188003AE44A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F703AFE322B272B8003AE44A /* FloatingViewParameter.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F703AFED22B39196003AE44A /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				F703AFE122B27241003AE44A /* FloatStackController.swift */,
+				F703AFE922B39142003AE44A /* FloatViewTransitioCoordinator.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		F7AFB7DB22A39CB100DE2D44 = {
 			isa = PBXGroup;
 			children = (
@@ -74,8 +106,9 @@
 				F7AFB7F922A3A14900DE2D44 /* FloatStackViewController.swift */,
 				F7AFB7FB22A3A18500DE2D44 /* FloatStackViewController.storyboard */,
 				F7AFB7FD22A3AABF00DE2D44 /* FloatingViewController.swift */,
-				F703AFE122B27241003AE44A /* FloatStackController.swift */,
-				F703AFE322B272B8003AE44A /* FloatingViewParameter.swift */,
+				F703AFED22B39196003AE44A /* Controller */,
+				F703AFEB22B3917B003AE44A /* Protocol */,
+				F703AFEC22B39188003AE44A /* Model */,
 				F7AFB7FF22A3AE6C00DE2D44 /* TestTableViewController.swift */,
 				F7AFB80122A3AE8A00DE2D44 /* TestTableViewController.storyboard */,
 				F7AFB7EE22A39CB300DE2D44 /* Assets.xcassets */,
@@ -160,11 +193,14 @@
 			files = (
 				F7AFB7FA22A3A14900DE2D44 /* FloatStackViewController.swift in Sources */,
 				F703AFE222B27241003AE44A /* FloatStackController.swift in Sources */,
+				F703AFEA22B39142003AE44A /* FloatViewTransitioCoordinator.swift in Sources */,
 				F703AFE422B272B8003AE44A /* FloatingViewParameter.swift in Sources */,
+				F703AFE822B39115003AE44A /* FloatViewTransitionable.swift in Sources */,
 				F7AFB80022A3AE6C00DE2D44 /* TestTableViewController.swift in Sources */,
 				F7AFB7EA22A39CB100DE2D44 /* ViewController.swift in Sources */,
 				F7AFB7FE22A3AABF00DE2D44 /* FloatingViewController.swift in Sources */,
 				F7AFB7E822A39CB100DE2D44 /* AppDelegate.swift in Sources */,
+				F703AFE622B390F6003AE44A /* FloatViewTransitionObservable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
