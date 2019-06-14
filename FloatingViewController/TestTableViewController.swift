@@ -1,6 +1,6 @@
 import UIKit
 
-class TestTableViewController: FloatingViewController, UITableViewDelegate, UITableViewDataSource {
+class TestTableViewController: FloatingViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate {
     
     let datasource: [String] = [
     "a",
@@ -27,6 +27,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
         super.viewDidLoad()
 
         self.numberLabel.text = "\(number)"
+        
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -65,6 +66,32 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
         default:
             break
         }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView.contentOffset.y < 0 else {
+            return
+        }
+
+        let velocity: CGPoint = .zero
+        
+        if scrollView.isDragging {
+            
+            let recognizer = scrollView.panGestureRecognizer
+            let translation = recognizer.translation(in: self.view)
+            
+            NotificationCenter.default.post(name: didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+                                                                                                          FloatNotificationProperty.velocity: velocity])
+        }
+    }
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        let recognizer = scrollView.panGestureRecognizer
+        let translation = recognizer.translation(in: self.view)
+        
+        NotificationCenter.default.post(name: didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+                                                                                                      FloatNotificationProperty.velocity: velocity])
     }
     
 }

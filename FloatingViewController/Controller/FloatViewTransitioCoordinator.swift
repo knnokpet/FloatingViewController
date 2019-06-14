@@ -45,6 +45,15 @@ class FloatViewTransitioCoordinator: NSObject, FloatViewTransitionObservable, Fl
             else {
                 return
         }
+        
+        if let topSpaceConstraint = currentParameter.floatingViewTopSpaceConstraint, topSpaceConstraint.isActive {
+            NSLayoutConstraint.deactivate([topSpaceConstraint])
+            if let heightConstraint = currentParameter.floatingViewHeightConstraint, !heightConstraint.isActive {
+                self.stackController?.currentFloatingViewHeightConstant = self.stackController?.currentFloatingViewController?.view.bounds.height ?? 0
+                NSLayoutConstraint.activate([heightConstraint])
+            }
+        }
+        
         currentParameter.floatingViewHeightConstraint?.constant =  (self.stackController?.currentFloatingViewHeightConstant ?? 0) + (-translation.y)
     }
     
