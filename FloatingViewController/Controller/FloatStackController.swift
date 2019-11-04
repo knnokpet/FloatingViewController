@@ -26,7 +26,7 @@ class FloatStackController: NSObject {
         return viewControllers[0]
     }
     
-    internal var currentParameter: FloatingViewParameter? {
+    internal var currentParameter: FloatingViewLayoutConstraintParameter? {
         guard parameters.count > 0 else {
             return nil
         }
@@ -40,7 +40,7 @@ class FloatStackController: NSObject {
         return viewControllers[1]
     }
     
-    internal var previousParameter: FloatingViewParameter? {
+    internal var previousParameter: FloatingViewLayoutConstraintParameter? {
         guard parameters.count > 1 else {
             return nil
         }
@@ -54,7 +54,7 @@ class FloatStackController: NSObject {
     var currentFloatingViewHeightConstant: CGFloat = 0
     
     private var viewControllers: [UIViewController] = []
-    private var parameters: [FloatingViewParameter] = []
+    private var parameters: [FloatingViewLayoutConstraintParameter] = []
     
     internal var currentFloatingMode: FloatingMode = .middle
     
@@ -83,7 +83,7 @@ class FloatStackController: NSObject {
         tallerHeightConstraint.priority = .defaultHigh
         tallerHeightConstraint.isActive = false
         
-        let parameter: FloatingViewParameter = FloatingViewParameter(floatingViewShorterHeightConstraint: shorterHeightConstraint, floatingViewTallerHeightConstraint: tallerHeightConstraint, floatingViewHeightConstraint: strechingHeightConstraint, floatingViewTopSpaceConstraint: topSpaceConstraint)
+        let parameter: FloatingViewLayoutConstraintParameter = FloatingViewLayoutConstraintParameter(floatingViewShorterHeightConstraint: shorterHeightConstraint, floatingViewTallerHeightConstraint: tallerHeightConstraint, floatingViewHeightConstraint: strechingHeightConstraint, floatingViewTopSpaceConstraint: topSpaceConstraint)
         self.add(viewController: viewController, parameter: parameter)
         
         viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0.0).isActive = true
@@ -100,7 +100,7 @@ class FloatStackController: NSObject {
 
     }
     
-    private func add(viewController: UIViewController, parameter: FloatingViewParameter) {
+    private func add(viewController: UIViewController, parameter: FloatingViewLayoutConstraintParameter) {
         self.viewControllers.insert(viewController, at: 0)
         self.parameters.insert(parameter, at: 0)
     }
