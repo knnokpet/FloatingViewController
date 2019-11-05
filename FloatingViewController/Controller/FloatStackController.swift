@@ -10,12 +10,12 @@ let shorterHeight: CGFloat = 120
 class FloatStackController: NSObject {
     
     weak var parentViewController: UIViewController?
-    var transitionCoordinator: FloatViewTransitioCoordinator?
+    var transitionCoordinator: FloatViewTransitionCoordinator?
     
     init(parentViewController: UIViewController) {
         super.init()
         self.parentViewController = parentViewController
-        self.transitionCoordinator = FloatViewTransitioCoordinator(stackController: self)
+        self.transitionCoordinator = FloatViewTransitionCoordinator(stackController: self)
     }
     
     

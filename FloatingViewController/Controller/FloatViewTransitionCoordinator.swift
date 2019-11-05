@@ -1,6 +1,6 @@
 import UIKit
 
-class FloatViewTransitioCoordinator: NSObject, FloatViewTransitionObservable, FloatViewTransitionable {
+class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, FloatViewTransitionable {
     
     weak var stackController: FloatStackController?
     
