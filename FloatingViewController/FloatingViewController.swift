@@ -12,8 +12,11 @@ class FloatingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.clear
-        self.view.layer.cornerRadius = 10.0
-        self.view.layer.masksToBounds = true
+        let maskPath = UIBezierPath(roundedRect: self.view.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 10, height: 10))
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = self.view.bounds
+        maskLayer.path = maskPath.cgPath
+        self.view.layer.mask = maskLayer
     }
     
     private func configureVisualEffectView() {

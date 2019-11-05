@@ -64,7 +64,12 @@ class FloatStackController: NSObject {
         
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         parent.addChild(viewController)
-        parent.view.addSubview(viewController.view)
+        if parent is UITabBarController {
+            parent.view.insertSubview(viewController.view, belowSubview: (parent as! UITabBarController).tabBar)
+        } else {
+            parent.view.addSubview(viewController.view)
+        }
+        
         
         //TODO: REFACTOR
         let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.safeAreaInsets.top)
@@ -88,7 +93,13 @@ class FloatStackController: NSObject {
         
         viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0.0).isActive = true
         viewController.view.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0.0).isActive = true
-        viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
+        
+        if parent is UITabBarController {
+            viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: -(parent as! UITabBarController).tabBar.bounds.height).isActive = true
+        } else {
+            viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
+        }
+        
         
         viewController.didMove(toParent: parent)
         

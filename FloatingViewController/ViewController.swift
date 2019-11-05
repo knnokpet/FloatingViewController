@@ -14,7 +14,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.floatStackController = FloatStackController(parentViewController: self)
+        let parent: UIViewController = self.parent ?? self
+        self.floatStackController = FloatStackController(parentViewController: parent)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
