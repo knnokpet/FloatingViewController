@@ -4,6 +4,8 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     
     weak var stackController: FloatStackController?
     
+    var beginningTopConstraintConstant: CGFloat = 0
+    
     init(stackController: FloatStackController) {
         super.init()
         self.stackController = stackController
@@ -19,39 +21,50 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     @objc public func handleFloatViewControllerBegan(_ notification: Notification) {
         guard
             let currentFloatingViewController = self.stackController?.currentFloatingViewController,
-            let currentParameter = self.stackController?.currentParameter,
-            let shorterHeightConstraint = currentParameter.floatingViewShorterHeightConstraint,
-            let tallerHeightConstraint = currentParameter.floatingViewTallerHeightConstraint,
-            let heightConstraint = currentParameter.floatingViewHeightConstraint,
-            let topSpaceConstraint = currentParameter.floatingViewTopSpaceConstraint
+            let currentParameter = self.stackController?.currentParameter
             else {
                 return
         }
         
-        NSLayoutConstraint.deactivate([tallerHeightConstraint, shorterHeightConstraint, topSpaceConstraint])
-        NSLayoutConstraint.activate([heightConstraint])
         currentParameter.floatingViewHeightConstraint?.constant = currentFloatingViewController.view.bounds.height
         self.stackController?.currentFloatingViewHeightConstant = currentFloatingViewController.view.bounds.height
+        
+        beginningTopConstraintConstant = currentParameter.floatingViewTopSpaceConstraint?.constant ?? 0
     }
     
     @objc public func handleFloatViewControllerTranslation(_ notification: Notification) {
         guard
-            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint
-            else {
-                return
-        }
-        guard
+            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint,
             let currentParameter = self.stackController?.currentParameter
             else {
                 return
         }
         
         if let topSpaceConstraint = currentParameter.floatingViewTopSpaceConstraint, topSpaceConstraint.isActive {
-            NSLayoutConstraint.deactivate([topSpaceConstraint])
-            if let heightConstraint = currentParameter.floatingViewHeightConstraint, !heightConstraint.isActive {
-                self.stackController?.currentFloatingViewHeightConstant = self.stackController?.currentFloatingViewController?.view.bounds.height ?? 0
-                NSLayoutConstraint.activate([heightConstraint])
-            }
+            
+            let topSpaceConstant: CGFloat = {
+                let absolutedTranslationY = beginningTopConstraintConstant + translation.y
+                
+                // Set upper and lower limit
+                let mergin: CGFloat = 12.0
+                let fullScreenConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .fullScreen, parentViewController: self.stackController?.parentViewController)
+                let bottomConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .bottom, parentViewController: self.stackController?.parentViewController)
+                
+                if absolutedTranslationY < fullScreenConstant {
+                    
+                    let difference = abs(absolutedTranslationY - fullScreenConstant) + mergin
+                    let percentage = mergin / difference
+                    return beginningTopConstraintConstant + (translation.y * percentage)
+                } else if absolutedTranslationY > bottomConstant {
+                    let difference = abs(absolutedTranslationY - bottomConstant) + mergin
+                    let percentage = mergin / difference
+                    return beginningTopConstraintConstant + (translation.y * percentage)
+                } else {
+                    return absolutedTranslationY
+                }
+            }()
+            
+            topSpaceConstraint.constant = topSpaceConstant
         }
         
         currentParameter.floatingViewHeightConstraint?.constant =  (self.stackController?.currentFloatingViewHeightConstant ?? 0) + (-translation.y)
@@ -161,30 +174,16 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
          */
         
         guard
-            let currentFloatingViewController = self.stackController?.currentFloatingViewController,
             let currentParameter = self.stackController?.currentParameter,
-            let shorterHeightConstraint = currentParameter.floatingViewShorterHeightConstraint,
-            let tallerHeightConstraint = currentParameter.floatingViewTallerHeightConstraint,
-            let heightConstraint = currentParameter.floatingViewHeightConstraint,
             let topSpaceConstraint = currentParameter.floatingViewTopSpaceConstraint
             else {
                 return
         }
         
-        switch mode {
-        case .fullScreen:
-            NSLayoutConstraint.deactivate([shorterHeightConstraint, tallerHeightConstraint, heightConstraint])
-            NSLayoutConstraint.activate([topSpaceConstraint])
-        case .middle:
-            NSLayoutConstraint.deactivate([topSpaceConstraint, shorterHeightConstraint, heightConstraint])
-            NSLayoutConstraint.activate([tallerHeightConstraint])
-            
-        case .bottom:
-            NSLayoutConstraint.deactivate([topSpaceConstraint, tallerHeightConstraint, heightConstraint])
-            NSLayoutConstraint.activate([shorterHeightConstraint])
-            
-        }
+        NSLayoutConstraint.activate([topSpaceConstraint])
+        topSpaceConstraint.constant = TopLayoutConstraintCaluculator.calculatedConstant(for: mode, parentViewController: self.stackController?.parentViewController)
         self.stackController?.currentFloatingMode = mode
+        
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
             self.stackController?.parentViewController?.view.layoutIfNeeded()
         }, completion: { finished in
@@ -199,7 +198,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         guard
             let parent = self.stackController?.parentViewController,
             let currentFloatingViewController = self.stackController?.currentFloatingViewController,
-            var parameter = self.stackController?.currentParameter
+            let parameter = self.stackController?.currentParameter
             else {
                 return
         }
@@ -208,7 +207,6 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         
         let shadowView: UIView? = {
             if
-                let previous = self.stackController?.previousFloatingViewController,
                 let previousParameter = self.stackController?.previousParameter
             {
                 let shadowView = UIView()
@@ -230,7 +228,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
         
-        parameter.floatingViewHeightConstraint?.constant = tallerHeight
+        parameter.floatingViewTopSpaceConstraint?.constant = parent.view.bounds.height / 2
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
             
@@ -251,14 +249,13 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         guard
             let parent = self.stackController?.parentViewController,
             let currentFloatingViewController = self.stackController?.currentFloatingViewController,
-            var parameter = self.stackController?.currentParameter
+            let parameter = self.stackController?.currentParameter
             else {
                 return
         }
         
         let shadowView: UIView? = {
             if
-                let previous = self.stackController?.previousFloatingViewController,
                 let previousParameter = self.stackController?.previousParameter
             {
                 let shadowView = UIView()
@@ -284,7 +281,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         }
         
         let activeConstraints = [
-            parameter.floatingViewTopSpaceConstraint, parameter.floatingViewShorterHeightConstraint, parameter.floatingViewTallerHeightConstraint
+            parameter.floatingViewTopSpaceConstraint
             ]
             .compactMap { $0 }
             .filter { $0.isActive == true }
@@ -298,5 +295,23 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         }, completion: { finished in
             completionHandler?(finished)
         })
+    }
+}
+
+
+private final class TopLayoutConstraintCaluculator {
+    class func calculatedConstant(for mode:FloatingMode, parentViewController: UIViewController?) -> CGFloat {
+        
+        guard let parent = parentViewController else { return 0.0}
+        
+        #warning("NEED TO CHANGE TO PRACTICAL VALUE")
+        switch mode {
+        case .fullScreen:
+            return parent.view.safeAreaInsets.top
+        case .middle:
+            return parent.view.bounds.height / 2
+        case .bottom:
+            return parent.view.bounds.height / 1.3
+        }
     }
 }

@@ -72,23 +72,15 @@ class FloatStackController: NSObject {
         
         
         //TODO: REFACTOR
-        let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.safeAreaInsets.top)
+        let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.bounds.height)
         topSpaceConstraint.priority = .defaultHigh
-        topSpaceConstraint.isActive = false
-        
-        let shorterHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: shorterHeight)
-        shorterHeightConstraint.priority = .defaultHigh
-        shorterHeightConstraint.isActive = false
+        topSpaceConstraint.isActive = true
         
         let strechingHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: 0.0)
-        strechingHeightConstraint.priority = .defaultHigh
+        strechingHeightConstraint.priority = .defaultLow
         strechingHeightConstraint.isActive = true
         
-        let tallerHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: tallerHeight)
-        tallerHeightConstraint.priority = .defaultHigh
-        tallerHeightConstraint.isActive = false
-        
-        let parameter: FloatingViewLayoutConstraintParameter = FloatingViewLayoutConstraintParameter(floatingViewShorterHeightConstraint: shorterHeightConstraint, floatingViewTallerHeightConstraint: tallerHeightConstraint, floatingViewHeightConstraint: strechingHeightConstraint, floatingViewTopSpaceConstraint: topSpaceConstraint)
+        let parameter: FloatingViewLayoutConstraintParameter = FloatingViewLayoutConstraintParameter(floatingViewHeightConstraint: strechingHeightConstraint, floatingViewTopSpaceConstraint: topSpaceConstraint)
         self.add(viewController: viewController, parameter: parameter)
         
         viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0.0).isActive = true
