@@ -9,7 +9,7 @@ let didChangeFloatViewTranslation = Notification.Name("didChangeFloatViewTransla
 let didEndFloatViewTranslation = Notification.Name("didEndFloatViewTranslation")
 
 enum FloatNotificationProperty: String {
-    case translation, velocity
+    case translation, velocity, recognizer
 }
 
 class FloatStackViewController: UIViewController {

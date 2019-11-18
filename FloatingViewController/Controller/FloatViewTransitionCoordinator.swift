@@ -73,14 +73,17 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     @objc public func handleFloatViewControllerEnd(_ notification: Notification) {
         guard
             let floatStackController = self.stackController,
-            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint, let velocity = notification.userInfo?[FloatNotificationProperty.velocity] as? CGPoint
+            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint,
+            let recognizer = notification.userInfo?[FloatNotificationProperty.recognizer] as? UIPanGestureRecognizer
             else {
                 return
         }
         
+        let velocity: CGPoint = recognizer.velocity(in: self.stackController?.parentViewController?.view)
+        
         if abs(translation.y) < 50 {
             if (-100...100).contains(velocity.y) {
-                self.move(mode: floatStackController.currentFloatingMode)
+                self.move(mode: floatStackController.currentFloatingMode, notification: notification)
             } else if velocity.y < -100 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -92,7 +95,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .middle
                     }
                 }()
-                self.move(mode: toMode)
+                self.move(mode: toMode, notification: notification)
             } else if velocity.y > 100 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -104,7 +107,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .bottom
                     }
                 }()
-                self.move(mode: toMode)
+                self.move(mode: toMode, notification: notification)
             }
         } else {
             if translation.y < -50 {
@@ -118,7 +121,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .middle
                     }
                 }()
-                self.move(mode: toMode)
+                self.move(mode: toMode, notification: notification)
             } else if translation.y > 50 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -130,10 +133,10 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .bottom
                     }
                 }()
-                self.move(mode: toMode)
+                self.move(mode: toMode, notification: notification)
             } else {
                 if (-100...100).contains(velocity.y) {
-                    self.move(mode: floatStackController.currentFloatingMode)
+                    self.move(mode: floatStackController.currentFloatingMode, notification: notification)
                 } else if velocity.y < -100 {
                     let toMode: FloatingMode = {
                         switch floatStackController.currentFloatingMode {
@@ -145,7 +148,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                             return .middle
                         }
                     }()
-                    self.move(mode: toMode)
+                    self.move(mode: toMode, notification: notification)
                 } else if velocity.y > 100 {
                     let toMode: FloatingMode = {
                         switch floatStackController.currentFloatingMode {
@@ -157,7 +160,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                             return .bottom
                         }
                     }()
-                    self.move(mode: toMode)
+                    self.move(mode: toMode, notification: notification)
                 }
             }
             
@@ -165,7 +168,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         }
     }
     
-    func move(mode: FloatingMode) {
+    func move(mode: FloatingMode, notification: Notification? = nil) {
         
         /*
          Use standard UIView animation with layoutIfNeeded
@@ -180,11 +183,26 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                 return
         }
         
+        let topSpaceConstraintConstantForMode = TopLayoutConstraintCaluculator.calculatedConstant(for: mode, parentViewController: self.stackController?.parentViewController)
+        let merginBetweenTopConstraints = abs(topSpaceConstraint.constant - topSpaceConstraintConstantForMode)
+        
         NSLayoutConstraint.activate([topSpaceConstraint])
-        topSpaceConstraint.constant = TopLayoutConstraintCaluculator.calculatedConstant(for: mode, parentViewController: self.stackController?.parentViewController)
+        topSpaceConstraint.constant = topSpaceConstraintConstantForMode
         self.stackController?.currentFloatingMode = mode
         
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
+        let velocity: CGFloat = {
+            guard
+                let recognizer = (notification?.userInfo?[FloatNotificationProperty.recognizer] as? UIPanGestureRecognizer) else
+            {
+                return 0.0
+            }
+            
+            let velocityFromGesture: CGPoint = recognizer.velocity(in: self.stackController?.parentViewController?.view)
+            
+            return abs(velocityFromGesture.y / merginBetweenTopConstraints)
+        }()
+                
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: velocity, options: [.allowUserInteraction], animations: {
             self.stackController?.parentViewController?.view.layoutIfNeeded()
         }, completion: { finished in
             if finished {

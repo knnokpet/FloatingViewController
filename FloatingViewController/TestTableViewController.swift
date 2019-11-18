@@ -49,7 +49,6 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
     @IBAction func handlePanning(_ sender: Any) {
         guard let panRecognizer = sender as? UIPanGestureRecognizer else { return }
         let translation = panRecognizer.translation(in: self.view)
-        let velocity = panRecognizer.velocity(in: self.view)
         
         switch panRecognizer.state {
         case .began:
@@ -58,10 +57,10 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
             
             //debugPrint(panRecognizer.translation(in: self.view), panRecognizer.velocity(in: self.view))
             NotificationCenter.default.post(name: didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
-                                                                                                          FloatNotificationProperty.velocity: velocity])
+                                                                                                          FloatNotificationProperty.recognizer: panRecognizer])
         case .ended:
             NotificationCenter.default.post(name: didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
-                                                                                                       FloatNotificationProperty.velocity: velocity])
+                                                                                                       FloatNotificationProperty.recognizer: panRecognizer])
         case .failed:
             break
         case .cancelled:
