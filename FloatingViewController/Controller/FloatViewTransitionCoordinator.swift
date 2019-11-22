@@ -95,7 +95,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .middle
                     }
                 }()
-                self.move(mode: toMode, notification: notification)
+                self.move(mode: toMode, notification: nil)
             } else if velocity.y > 100 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -121,7 +121,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .middle
                     }
                 }()
-                self.move(mode: toMode, notification: notification)
+                self.move(mode: toMode, notification: nil)
             } else if translation.y > 50 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -133,7 +133,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         return .bottom
                     }
                 }()
-                self.move(mode: toMode, notification: notification)
+                self.move(mode: toMode, notification: nil)
             } else {
                 if (-100...100).contains(velocity.y) {
                     self.move(mode: floatStackController.currentFloatingMode, notification: notification)
