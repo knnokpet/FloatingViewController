@@ -87,7 +87,7 @@ class FloatStackController: NSObject {
         viewController.view.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0.0).isActive = true
         
         if parent is UITabBarController {
-            viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: -(parent as! UITabBarController).tabBar.bounds.height).isActive = true
+            viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
         } else {
             viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
         }

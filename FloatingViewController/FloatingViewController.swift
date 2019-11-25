@@ -11,14 +11,15 @@ class FloatingViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.clear
-        let maskPath = UIBezierPath(roundedRect: self.view.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 10, height: 10))
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = self.view.bounds
-        maskLayer.path = maskPath.cgPath
-        self.view.layer.mask = maskLayer
+        configureView()
     }
     
+    private func configureView() {
+        self.view.layer.cornerRadius = 10
+        self.view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        self.view.layer.masksToBounds = true
+    }
+
     private func configureVisualEffectView() {
         self.visualEffectView.translatesAutoresizingMaskIntoConstraints = false
         self.view.insertSubview(self.visualEffectView, at: 0)
