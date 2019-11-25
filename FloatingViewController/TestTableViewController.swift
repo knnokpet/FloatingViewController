@@ -52,14 +52,14 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
         
         switch panRecognizer.state {
         case .began:
-            NotificationCenter.default.post(name: didBeginFloatViewTranslation, object: self, userInfo: nil)
+            NotificationCenter.default.post(name: .didBeginFloatViewTranslation, object: self, userInfo: nil)
         case .changed:
             
             //debugPrint(panRecognizer.translation(in: self.view), panRecognizer.velocity(in: self.view))
-            NotificationCenter.default.post(name: didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+            NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                           FloatNotificationProperty.recognizer: panRecognizer])
         case .ended:
-            NotificationCenter.default.post(name: didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+            NotificationCenter.default.post(name: .didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                        FloatNotificationProperty.recognizer: panRecognizer])
         case .failed:
             break
@@ -82,7 +82,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
             let recognizer = scrollView.panGestureRecognizer
             let translation = recognizer.translation(in: self.view)
             
-            NotificationCenter.default.post(name: didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+            NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                           FloatNotificationProperty.velocity: velocity])
         }
     }
@@ -92,7 +92,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
         let recognizer = scrollView.panGestureRecognizer
         let translation = recognizer.translation(in: self.view)
         
-        NotificationCenter.default.post(name: didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+        NotificationCenter.default.post(name: .didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                       FloatNotificationProperty.velocity: velocity])
     }
     

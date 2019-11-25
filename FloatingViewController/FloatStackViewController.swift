@@ -4,14 +4,6 @@ protocol FloatStackViewControllerDelegate: class {
     func handleTranslation(viewController: FloatStackViewController, translation: CGPoint, velocity: CGPoint)
 }
 
-let didBeginFloatViewTranslation = Notification.Name("didBeginFloatViewTranslation")
-let didChangeFloatViewTranslation = Notification.Name("didChangeFloatViewTranslation")
-let didEndFloatViewTranslation = Notification.Name("didEndFloatViewTranslation")
-
-enum FloatNotificationProperty: String {
-    case translation, velocity, recognizer
-}
-
 class FloatStackViewController: UIViewController {
     
     weak var delegate: FloatStackViewControllerDelegate?
@@ -45,14 +37,14 @@ class FloatStackViewController: UIViewController {
         
         switch panRecognizer.state {
         case .began:
-            NotificationCenter.default.post(name: didBeginFloatViewTranslation, object: self, userInfo: nil)
+            NotificationCenter.default.post(name: .didBeginFloatViewTranslation, object: self, userInfo: nil)
         case .changed:
             
             //debugPrint(panRecognizer.translation(in: self.view), panRecognizer.velocity(in: self.view))
-            NotificationCenter.default.post(name: didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+            NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                           FloatNotificationProperty.velocity: velocity])
         case .ended:
-            NotificationCenter.default.post(name: didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
+            NotificationCenter.default.post(name: .didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                        FloatNotificationProperty.velocity: velocity])
         case .failed:
             break

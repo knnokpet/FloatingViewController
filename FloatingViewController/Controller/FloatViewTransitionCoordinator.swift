@@ -13,9 +13,9 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     }
     
     private func registerNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerBegan(_:)), name: didBeginFloatViewTranslation, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerTranslation(_:)), name: didChangeFloatViewTranslation, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerEnd(_:)), name: didEndFloatViewTranslation, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerBegan(_:)), name: .didBeginFloatViewTranslation, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerTranslation(_:)), name: .didChangeFloatViewTranslation, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerEnd(_:)), name: .didEndFloatViewTranslation, object: nil)
     }
     
     @objc public func handleFloatViewControllerBegan(_ notification: Notification) {
