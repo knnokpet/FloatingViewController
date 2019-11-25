@@ -4,14 +4,6 @@ protocol FloatStackViewControllerDelegate: class {
     func handleTranslation(viewController: FloatStackViewController, translation: CGPoint, velocity: CGPoint)
 }
 
-let didBeginFloatViewTranslation = Notification.Name("didBeginFloatViewTranslation")
-let didChangeFloatViewTranslation = Notification.Name("didChangeFloatViewTranslation")
-let didEndFloatViewTranslation = Notification.Name("didEndFloatViewTranslation")
-
-enum FloatNotificationProperty: String {
-    case translation, velocity, recognizer
-}
-
 class FloatStackViewController: UIViewController {
     
     weak var delegate: FloatStackViewControllerDelegate?
