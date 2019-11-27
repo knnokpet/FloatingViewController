@@ -4,6 +4,8 @@ class FloatingViewController: UIViewController {
     
     private var visualEffectView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
     
+    
+    // MARK: - Load
     override func loadView() {
         super.loadView()
         self.configureVisualEffectView()
@@ -14,8 +16,20 @@ class FloatingViewController: UIViewController {
         configureView()
     }
     
+    // MARK: - Layout
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
+        
+        NotificationCenter.default.post(name: .willChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: newCollection as Any])
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        NotificationCenter.default.post(name: .didChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: self.traitCollection as Any])
+    }
+    
+    // MARK: - Configure
     private func configureView() {
-        self.view.layer.cornerRadius = 10
+        self.view.layer.cornerRadius = 12
         self.view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         self.view.layer.masksToBounds = true
     }

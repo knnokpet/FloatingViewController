@@ -33,6 +33,10 @@ class FloatStackController: NSObject {
         return parameters[0]
     }
     
+    func setCurrentParameter(_ parameter: FloatingViewLayoutConstraintParameter) {
+        parameters[0] = parameter
+    }
+    
     internal var previousFloatingViewController: UIViewController? {
         guard viewControllers.count > 1 else {
             return nil
@@ -71,26 +75,52 @@ class FloatStackController: NSObject {
         }
         
         
-        //TODO: REFACTOR
         let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.bounds.height)
         topSpaceConstraint.priority = .defaultHigh
         topSpaceConstraint.isActive = true
+        topSpaceConstraint.identifier = "portrait top"
         
         let strechingHeightConstraint =  viewController.view.heightAnchor.constraint(equalToConstant: 0.0)
         strechingHeightConstraint.priority = .defaultLow
         strechingHeightConstraint.isActive = true
         
-        let parameter: FloatingViewLayoutConstraintParameter = FloatingViewLayoutConstraintParameter(floatingViewHeightConstraint: strechingHeightConstraint, floatingViewTopSpaceConstraint: topSpaceConstraint)
+        let left = viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0.0)
+        left.isActive = true
+        left.identifier = "portrait left"
+        
+        let right = viewController.view.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0.0)
+        right.isActive = true
+        right.identifier = "portrait right"
+        
+        let bottom = viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0)
+        bottom.isActive = true
+        bottom.identifier = "portrait bottom"
+        
+        //
+        let landscapeTop = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.safeAreaInsets.top)
+        landscapeTop.priority = .defaultHigh
+        landscapeTop.isActive = false
+        landscapeTop.identifier = "landscape top"
+        
+        let landscapeLeft = viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: parent.view.safeAreaInsets.top)
+        landscapeLeft.isActive = false
+        landscapeLeft.identifier = "landscape left"
+
+        let screenPercentage: CGFloat = UIScreen.main.bounds.width / UIScreen.main.bounds.height
+        
+        let usableHeight: CGFloat = parent.view.bounds.width - (parent.view.safeAreaInsets.left + parent.view.safeAreaInsets.right)
+        let widthConstraint = viewController.view.widthAnchor.constraint(equalToConstant: usableHeight * screenPercentage * 1.4)
+        widthConstraint.isActive = false
+        widthConstraint.identifier = "landscape width"
+        
+        let landscapeBottom = viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0)
+        landscapeBottom.isActive = false
+        landscapeBottom.identifier = "landscape bottom"
+        
+        
+        let parameter = FloatingViewLayoutConstraintParameter(portraitTopConstraint: topSpaceConstraint, portraitLeftConstraint: left, portraitRightConstraint: right, portraitBottomConstraint: bottom, landscapeTopConstraint: landscapeTop, landscapeLeftConstraint: landscapeLeft, landscapeWidthConstraint: widthConstraint, landscapeBottomConstraint: landscapeBottom)
+
         self.add(viewController: viewController, parameter: parameter)
-        
-        viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0.0).isActive = true
-        viewController.view.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0.0).isActive = true
-        
-        if parent is UITabBarController {
-            viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
-        } else {
-            viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
-        }
         
         
         viewController.didMove(toParent: parent)

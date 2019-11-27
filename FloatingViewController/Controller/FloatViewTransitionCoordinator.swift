@@ -10,6 +10,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         super.init()
         self.stackController = stackController
         self.registerNotifications()
+        self.registerNofiticationForTraitCollection()
     }
     
     private func registerNotifications() {
@@ -29,7 +30,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         currentParameter.floatingViewHeightConstraint?.constant = currentFloatingViewController.view.bounds.height
         self.stackController?.currentFloatingViewHeightConstant = currentFloatingViewController.view.bounds.height
         
-        beginningTopConstraintConstant = currentParameter.floatingViewTopSpaceConstraint?.constant ?? 0
+        beginningTopConstraintConstant = currentParameter.activeTopConstraint?.constant ?? 0
     }
     
     @objc public func handleFloatViewControllerTranslation(_ notification: Notification) {
@@ -40,7 +41,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                 return
         }
         
-        if let topSpaceConstraint = currentParameter.floatingViewTopSpaceConstraint, topSpaceConstraint.isActive {
+        if let topSpaceConstraint = currentParameter.activeTopConstraint {
             
             let topSpaceConstant: CGFloat = {
                 let absolutedTranslationY = beginningTopConstraintConstant + translation.y
@@ -178,7 +179,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         
         guard
             let currentParameter = self.stackController?.currentParameter,
-            let topSpaceConstraint = currentParameter.floatingViewTopSpaceConstraint
+            let topSpaceConstraint = currentParameter.activeTopConstraint
             else {
                 return
         }
@@ -246,7 +247,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
         
-        parameter.floatingViewTopSpaceConstraint?.constant = parent.view.bounds.height / 2
+        parameter.activeTopConstraint?.constant = parent.view.bounds.height / 2
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
             
@@ -299,7 +300,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         }
         
         let activeConstraints = [
-            parameter.floatingViewTopSpaceConstraint
+            parameter.activeTopConstraint
             ]
             .compactMap { $0 }
             .filter { $0.isActive == true }
@@ -313,6 +314,77 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         }, completion: { finished in
             completionHandler?(finished)
         })
+    }
+    
+}
+
+extension FloatViewTransitionCoordinator {
+    private func registerNofiticationForTraitCollection() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTraitcollectionWillChange), name: .willChangeTraitCollection, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTraitcollectionDidChange), name: .didChangeTraitCollection, object: nil)
+    }
+    
+    @objc public func handleTraitcollectionWillChange(_ notification: Notification) {
+        guard let _ = notification.userInfo?[FloatNotificationProperty.traitcollection] as? UITraitCollection else {
+            return
+        }
+    }
+    
+    @objc public func handleTraitcollectionDidChange(_ notification: Notification) {
+        guard let traitCollection = notification.userInfo?[FloatNotificationProperty.traitcollection] as? UITraitCollection else {
+            return
+        }
+        
+        guard
+            let currentViewController = self.stackController?.currentFloatingViewController,
+            let parentViewController = self.stackController?.parentViewController
+        else { return }
+        
+        self.updateConstraints()
+        
+        if traitCollection.verticalSizeClass == .compact { // landscape
+            #warning("NOT OPTIMIZED FOR NON FULL EDGE PHONE")
+            
+            self.stackController?.currentParameter?.portraitTopConstraint?.isActive = false
+            self.stackController?.currentParameter?.portraitLeftConstraint?.isActive = false
+            self.stackController?.currentParameter?.portraitRightConstraint?.isActive = false
+            self.stackController?.currentParameter?.portraitBottomConstraint?.isActive = false
+            
+            self.stackController?.currentParameter?.landscapeTopConstraint?.isActive = true
+            self.stackController?.currentParameter?.landscapeLeftConstraint?.isActive = true
+            self.stackController?.currentParameter?.landscapeWidthConstraint?.isActive = true
+            self.stackController?.currentParameter?.landscapeBottomConstraint?.isActive = true
+            
+        } else if traitCollection.verticalSizeClass == .regular { // portrait
+            
+            self.stackController?.currentParameter?.landscapeTopConstraint?.isActive = false
+            self.stackController?.currentParameter?.landscapeLeftConstraint?.isActive = false
+            self.stackController?.currentParameter?.landscapeWidthConstraint?.isActive = false
+            self.stackController?.currentParameter?.landscapeBottomConstraint?.isActive = false
+            
+            self.stackController?.currentParameter?.portraitTopConstraint?.isActive = true
+            self.stackController?.currentParameter?.portraitLeftConstraint?.isActive = true
+            self.stackController?.currentParameter?.portraitRightConstraint?.isActive = true
+            self.stackController?.currentParameter?.portraitBottomConstraint?.isActive = true
+        }
+        
+        parentViewController.view.layoutIfNeeded()
+        currentViewController.view.layoutIfNeeded()
+    }
+    
+    private func updateConstraints() {
+        
+        guard
+            let mode =  self.stackController?.currentFloatingMode,
+            let parent = self.stackController?.parentViewController
+        else { return }
+        
+        let constant = TopLayoutConstraintCaluculator.calculatedConstant(for: mode, parentViewController: parent)
+        if let current = self.stackController?.currentParameter {
+            current.portraitTopConstraint?.constant = constant
+            current.landscapeTopConstraint?.constant = constant
+            self.stackController?.setCurrentParameter(current)
+        }
     }
 }
 
