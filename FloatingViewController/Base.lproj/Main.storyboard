@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -36,63 +36,76 @@
                                     <segue destination="lYw-Yp-vZd" kind="embed" identifier="FloatStackViewController" id="gUa-IH-tDv"/>
                                 </connections>
                             </containerView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cyu-oE-F7w">
-                                <rect key="frame" x="192" y="168" width="30" height="30"/>
-                                <state key="normal" title="Add"/>
-                                <connections>
-                                    <action selector="show:" destination="BYZ-38-t0r" eventType="touchUpInside" id="XnT-ID-dEY"/>
-                                </connections>
-                            </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="Wab-K9-h47">
-                                <rect key="frame" x="123.5" y="283" width="167" height="30"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="39" translatesAutoresizingMaskIntoConstraints="NO" id="gPx-gx-2tq">
+                                <rect key="frame" x="165" y="84" width="84.5" height="22"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F7i-Ak-vOS">
-                                        <rect key="frame" x="0.0" y="0.0" width="38" height="30"/>
-                                        <state key="normal" title="Move"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cyu-oE-F7w">
+                                        <rect key="frame" x="0.0" y="0.0" width="26" height="22"/>
+                                        <state key="normal" image="plus.rectangle.on.rectangle" catalog="system"/>
                                         <connections>
-                                            <action selector="moveToMiddle:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iqS-YU-zfz"/>
+                                            <action selector="show:" destination="BYZ-38-t0r" eventType="touchUpInside" id="XnT-ID-dEY"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kcA-z2-XNr">
+                                        <rect key="frame" x="65" y="0.0" width="19.5" height="22"/>
+                                        <state key="normal" image="trash" catalog="system"/>
+                                        <connections>
+                                            <action selector="remove:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pZy-n7-Mp2"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="Wab-K9-h47">
+                                <rect key="frame" x="119" y="144" width="176" height="30"/>
+                                <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VpJ-K6-ifL">
-                                        <rect key="frame" x="62" y="0.0" width="30" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                         <state key="normal" title="Full"/>
                                         <connections>
                                             <action selector="moveToFullScreen:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1Nr-S3-4Sd"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F7i-Ak-vOS">
+                                        <rect key="frame" x="54" y="0.0" width="47" height="30"/>
+                                        <state key="normal" title="Middle"/>
+                                        <connections>
+                                            <action selector="moveToMiddle:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iqS-YU-zfz"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i4M-Jj-ZHl">
-                                        <rect key="frame" x="116" y="0.0" width="51" height="30"/>
+                                        <rect key="frame" x="125" y="0.0" width="51" height="30"/>
                                         <state key="normal" title="Bottom"/>
                                         <connections>
                                             <action selector="moveTobottom:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bK5-wq-qrD"/>
                                         </connections>
                                     </button>
                                 </subviews>
+                                <variation key="default">
+                                    <mask key="subviews">
+                                        <exclude reference="F7i-Ak-vOS"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="subviews">
+                                        <include reference="F7i-Ak-vOS"/>
+                                    </mask>
+                                </variation>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kcA-z2-XNr">
-                                <rect key="frame" x="261" y="168" width="55" height="30"/>
-                                <state key="normal" title="Remove"/>
-                                <connections>
-                                    <action selector="remove:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pZy-n7-Mp2"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="jlO-W2-lkS" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="6xi-dd-MwS"/>
-                            <constraint firstItem="cyu-oE-F7w" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="124" id="A4b-4l-FNw"/>
                             <constraint firstItem="vcU-H3-LS0" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="DyG-vD-lEb"/>
                             <constraint firstItem="jlO-W2-lkS" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" priority="750" id="GHB-c9-ftA"/>
-                            <constraint firstItem="Wab-K9-h47" firstAttribute="top" secondItem="cyu-oE-F7w" secondAttribute="bottom" constant="85" id="Ka6-c7-cEk"/>
-                            <constraint firstItem="kcA-z2-XNr" firstAttribute="centerY" secondItem="cyu-oE-F7w" secondAttribute="centerY" id="Kic-8f-0T4"/>
-                            <constraint firstItem="kcA-z2-XNr" firstAttribute="leading" secondItem="cyu-oE-F7w" secondAttribute="trailing" constant="39" id="bnk-he-Hjw"/>
-                            <constraint firstItem="cyu-oE-F7w" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="fID-SL-ZDq"/>
+                            <constraint firstItem="Wab-K9-h47" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="PCO-nh-dYX"/>
+                            <constraint firstItem="gPx-gx-2tq" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="dmw-Pk-Dpe"/>
                             <constraint firstItem="jlO-W2-lkS" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="m5w-w5-yl5"/>
-                            <constraint firstItem="Wab-K9-h47" firstAttribute="centerX" secondItem="cyu-oE-F7w" secondAttribute="centerX" id="opV-Ia-zii"/>
                             <constraint firstItem="vcU-H3-LS0" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="qG6-ka-6OQ"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jlO-W2-lkS" secondAttribute="trailing" id="qN2-Es-Va6"/>
+                            <constraint firstItem="gPx-gx-2tq" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="40" id="wGu-NA-iAo"/>
                             <constraint firstAttribute="bottom" secondItem="vcU-H3-LS0" secondAttribute="bottom" id="xov-KT-DEg"/>
                             <constraint firstAttribute="trailing" secondItem="vcU-H3-LS0" secondAttribute="trailing" id="yHF-iH-huS"/>
+                            <constraint firstItem="Wab-K9-h47" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="zzh-AT-ujs"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -118,7 +131,8 @@
             <objects>
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="WRw-C8-hu9" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7XF-8d-9Y4">
+                    <tabBar key="tabBar" hidden="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7XF-8d-9Y4">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
@@ -133,5 +147,7 @@
     </scenes>
     <resources>
         <image name="3ff1222c" width="960" height="1280"/>
+        <image name="plus.rectangle.on.rectangle" catalog="system" width="64" height="48"/>
+        <image name="trash" catalog="system" width="60" height="64"/>
     </resources>
 </document>
