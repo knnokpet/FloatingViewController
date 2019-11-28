@@ -4,6 +4,7 @@ class FloatingViewController: UIViewController {
     
     private var visualEffectView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
     
+    let shadowView: CoverShadowView = CoverShadowView()
     
     // MARK: - Load
     override func loadView() {
@@ -14,6 +15,7 @@ class FloatingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
+        configureShadowView()
     }
     
     // MARK: - Layout
@@ -32,6 +34,15 @@ class FloatingViewController: UIViewController {
         self.view.layer.cornerRadius = 12
         self.view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         self.view.layer.masksToBounds = true
+    }
+    
+    private func configureShadowView() {
+        self.view.addSubview(shadowView)
+        
+        shadowView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 0) .isActive = true
+        shadowView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 0).isActive = true
+        shadowView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 0).isActive = true
+        shadowView.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: 0).isActive = true
     }
 
     private func configureVisualEffectView() {

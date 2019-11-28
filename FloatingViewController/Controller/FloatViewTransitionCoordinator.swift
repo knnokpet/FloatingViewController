@@ -233,56 +233,38 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     func present(completionHandler: ((Bool) -> Void)?) {
         guard
             let parent = self.stackController?.parentViewController,
-            let currentFloatingViewController = self.stackController?.currentFloatingViewController,
+            let _ = self.stackController?.currentFloatingViewController,
             let parameter = self.stackController?.currentParameter
             else {
                 return
         }
-        
-        
-        
-        let shadowView: UIView? = {
-            if
-                let previousParameter = self.stackController?.previousParameter
-            {
-                let shadowView = UIView()
-                shadowView.translatesAutoresizingMaskIntoConstraints = false
-                parent.view.insertSubview(shadowView, belowSubview: currentFloatingViewController.view)
-                shadowView.backgroundColor = .black
-                shadowView.layer.cornerRadius = 10.0
-                shadowView.layer.masksToBounds = true
-                shadowView.layer.opacity = 0.0
-                shadowView.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor, constant: 0.0).isActive = true
-                shadowView.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor, constant: 0.0).isActive = true
-                shadowView.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
-                shadowView.heightAnchor.constraint(equalToConstant: (previousParameter.floatingViewHeightConstraint?.constant ?? 0)).isActive = true
-                return shadowView
-            }
-            return nil
-        }()
-        
+
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
         
         parameter.activeTopConstraint?.constant = parent.view.bounds.height / 2
         
-        UIView.animate(withDuration: 0.7) {
-            if let previousViewController = self.stackController?.previousFloatingViewController {
-                previousViewController.view.layer.opacity = 0.0
+        // For Previous
+        UIView.animate(withDuration: 0.3, animations: {
+            if let previousViewController = self.stackController?.previousFloatingViewController as? FloatingViewController {
+                previousViewController.shadowView.isHiddenShadowView = false
+            }
+        }) { (isFinished) in
+            if isFinished {
+                UIView.animate(withDuration: 0.3, animations: {
+                    if let previousViewController = self.stackController?.previousFloatingViewController as? FloatingViewController {
+                        previousViewController.view.layer.opacity = 0.0
+                    }
+                }, completion: nil)
             }
         }
         
+        // For Current
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
             
             self.stackController?.parentViewController?.view.layoutIfNeeded()
             
         }, completion: { finished in
-            if finished {
-                
-                
-                
-                //self.stackController?.previousFloatingViewController?.view.isHidden = true
-            }
             completionHandler?(finished)
         })
     }
@@ -290,38 +272,15 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     func remove(completionHandler: ((Bool) -> Void)?) {
         
         guard
-            let parent = self.stackController?.parentViewController,
-            let currentFloatingViewController = self.stackController?.currentFloatingViewController,
+            let _ = self.stackController?.parentViewController,
+            let _ = self.stackController?.currentFloatingViewController,
             let parameter = self.stackController?.currentParameter
             else {
                 return
         }
-        
-        let shadowView: UIView? = {
-            if
-                let previousParameter = self.stackController?.previousParameter
-            {
-                let shadowView = UIView()
-                shadowView.translatesAutoresizingMaskIntoConstraints = false
-                parent.view.insertSubview(shadowView, belowSubview: currentFloatingViewController.view)
-                shadowView.backgroundColor = .black
-                shadowView.layer.cornerRadius = 10.0
-                shadowView.layer.masksToBounds = true
-                shadowView.layer.opacity = 0.1
-                shadowView.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor, constant: 0.0).isActive = true
-                shadowView.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor, constant: 0.0).isActive = true
-                shadowView.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0).isActive = true
-                shadowView.heightAnchor.constraint(equalToConstant: (previousParameter.floatingViewHeightConstraint?.constant ?? 0)).isActive = true
-                return shadowView
-            }
-            return nil
-        }()
+
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
-        
-        if let _ = shadowView {
-            self.stackController?.previousFloatingViewController?.view.isHidden = false
-        }
         
         let activeConstraints = [
             parameter.activeTopConstraint
@@ -332,8 +291,15 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         NSLayoutConstraint.deactivate(activeConstraints)
         parameter.floatingViewHeightConstraint?.constant = 0
         
+        if let previousViewController = self.stackController?.previousFloatingViewController as? FloatingViewController {
+            previousViewController.shadowView.isHiddenShadowView = false
+            previousViewController.view.layer.opacity = 1.0
+            UIView.animate(withDuration: 0.3, animations: {
+                previousViewController.shadowView.isHiddenShadowView = true
+            }, completion: nil)
+        }
+        
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [], animations: {
-            shadowView?.layer.opacity = 0.0
             self.stackController?.parentViewController?.view.layoutIfNeeded()
         }, completion: { finished in
             completionHandler?(finished)
