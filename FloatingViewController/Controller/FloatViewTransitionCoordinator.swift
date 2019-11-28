@@ -72,7 +72,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     let max = middleConstant - fullScreenConstant
                     let current = topSpaceConstant - fullScreenConstant
                     let percentage = 1 - current / max
-                    self.stackController?.setShadowVisibly(percentage)
+                    self.stackController?.shadowView?.setShadowVisibility(percentage)
                 }
             }
             
@@ -219,7 +219,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
             self.stackController?.parentViewController?.view.layoutIfNeeded()
             
             if self.stackController?.parentViewController?.traitCollection.verticalSizeClass == .regular {
-                self.stackController?.isHiddenShadowView = mode != .fullScreen
+                self.stackController?.shadowView?.isHiddenShadowView = mode != .fullScreen
             }
             
         }, completion: { finished in
@@ -266,15 +266,22 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         
         parameter.activeTopConstraint?.constant = parent.view.bounds.height / 2
         
+        UIView.animate(withDuration: 0.7) {
+            if let previousViewController = self.stackController?.previousFloatingViewController {
+                previousViewController.view.layer.opacity = 0.0
+            }
+        }
+        
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
             
-            shadowView?.layer.opacity = 0.1
             self.stackController?.parentViewController?.view.layoutIfNeeded()
             
         }, completion: { finished in
             if finished {
-                shadowView?.removeFromSuperview()
-                self.stackController?.previousFloatingViewController?.view.isHidden = true
+                
+                
+                
+                //self.stackController?.previousFloatingViewController?.view.isHidden = true
             }
             completionHandler?(finished)
         })
@@ -408,12 +415,12 @@ extension FloatViewTransitionCoordinator {
     private func updateShadowView(with traitCollection: UITraitCollection) {
         UIView.animate(withDuration: 0.3) {
             if traitCollection.verticalSizeClass == .compact {
-                self.stackController?.isHiddenShadowView = true
+                self.stackController?.shadowView?.isHiddenShadowView = true
             } else {
                 if self.stackController?.currentFloatingMode == .fullScreen {
-                    self.stackController?.isHiddenShadowView = false
+                    self.stackController?.shadowView?.isHiddenShadowView = false
                 } else {
-                    self.stackController?.isHiddenShadowView = true
+                    self.stackController?.shadowView?.isHiddenShadowView = true
                 }
                 
             }

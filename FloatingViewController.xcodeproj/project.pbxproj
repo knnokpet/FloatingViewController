@@ -13,6 +13,7 @@
 		F703AFE822B39115003AE44A /* FloatViewTransitionable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE722B39115003AE44A /* FloatViewTransitionable.swift */; };
 		F703AFEA22B39142003AE44A /* FloatViewTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE922B39142003AE44A /* FloatViewTransitionCoordinator.swift */; };
 		F731DF1F238BACBB00455A97 /* FloatViewNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F731DF1E238BACBB00455A97 /* FloatViewNotification.swift */; };
+		F79EA661238FFC7900C1E8F9 /* CoverShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79EA660238FFC7900C1E8F9 /* CoverShadowView.swift */; };
 		F7AFB7E822A39CB100DE2D44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7E722A39CB100DE2D44 /* AppDelegate.swift */; };
 		F7AFB7EA22A39CB100DE2D44 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7E922A39CB100DE2D44 /* ViewController.swift */; };
 		F7AFB7ED22A39CB100DE2D44 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AFB7EB22A39CB100DE2D44 /* Main.storyboard */; };
@@ -32,6 +33,7 @@
 		F703AFE722B39115003AE44A /* FloatViewTransitionable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewTransitionable.swift; sourceTree = "<group>"; };
 		F703AFE922B39142003AE44A /* FloatViewTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewTransitionCoordinator.swift; sourceTree = "<group>"; };
 		F731DF1E238BACBB00455A97 /* FloatViewNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewNotification.swift; sourceTree = "<group>"; };
+		F79EA660238FFC7900C1E8F9 /* CoverShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverShadowView.swift; sourceTree = "<group>"; };
 		F7AFB7E422A39CB100DE2D44 /* FloatingViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FloatingViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7AFB7E722A39CB100DE2D44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F7AFB7E922A39CB100DE2D44 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 				F7AFB7FB22A3A18500DE2D44 /* FloatStackViewController.storyboard */,
 				F7AFB7FD22A3AABF00DE2D44 /* FloatingViewController.swift */,
 				F731DF1E238BACBB00455A97 /* FloatViewNotification.swift */,
+				F79EA660238FFC7900C1E8F9 /* CoverShadowView.swift */,
 				F703AFED22B39196003AE44A /* Controller */,
 				F703AFEB22B3917B003AE44A /* Protocol */,
 				F703AFEC22B39188003AE44A /* Model */,
@@ -194,6 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F79EA661238FFC7900C1E8F9 /* CoverShadowView.swift in Sources */,
 				F7AFB7FA22A3A14900DE2D44 /* FloatStackViewController.swift in Sources */,
 				F703AFE222B27241003AE44A /* FloatStackController.swift in Sources */,
 				F731DF1F238BACBB00455A97 /* FloatViewNotification.swift in Sources */,

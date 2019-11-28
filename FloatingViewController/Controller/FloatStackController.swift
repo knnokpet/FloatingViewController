@@ -53,17 +53,7 @@ class FloatStackController: NSObject {
     }
     
     // MARK: Shadow
-    var shadowView: UIView?
-    private let visibleShadowOpacity: Float = 0.2
-    var isHiddenShadowView: Bool = false {
-        didSet {
-            if isHiddenShadowView == true {
-                shadowView?.layer.opacity = 0.0
-            } else {
-                shadowView?.layer.opacity = visibleShadowOpacity
-            }
-        }
-    }
+    var shadowView: CoverShadowView?
     
     // MARK: - Initialize
     init(parentViewController: UIViewController) {
@@ -77,21 +67,13 @@ class FloatStackController: NSObject {
         parameters[0] = parameter
     }
     
-    func setShadowVisibly(_ percentage: CGFloat) {
-        shadowView?.layer.opacity = Float(percentage) * visibleShadowOpacity
-    }
-    
     // MARK: - Manage Floating View Controller
     internal func add(childViewController viewController: UIViewController) {
         
         guard let parent = self.parentViewController else { return }
         
         if shadowView == nil {
-            let shadowView = UIView()
-            shadowView.translatesAutoresizingMaskIntoConstraints = false
-            shadowView.backgroundColor = UIColor.black
-            shadowView.layer.opacity = 0.0
-            shadowView.isUserInteractionEnabled = false
+            let shadowView = CoverShadowView()
             if parent is UITabBarController {
                 parent.view.insertSubview(shadowView, belowSubview: (parent as! UITabBarController).tabBar)
             } else {
