@@ -43,16 +43,17 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         
         if let topSpaceConstraint = currentParameter.activeTopConstraint {
             
+            let fullScreenConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .fullScreen, parentViewController: self.stackController?.parentViewController)
+            let middleConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .middle, parentViewController: self.stackController?.parentViewController)
+            
             let topSpaceConstant: CGFloat = {
                 let absolutedTranslationY = beginningTopConstraintConstant + translation.y
                 
                 // Set upper and lower limit
                 let mergin: CGFloat = 12.0
-                let fullScreenConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .fullScreen, parentViewController: self.stackController?.parentViewController)
                 let bottomConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .bottom, parentViewController: self.stackController?.parentViewController)
                 
                 if absolutedTranslationY < fullScreenConstant {
-                    
                     let difference = abs(absolutedTranslationY - fullScreenConstant) + mergin
                     let percentage = mergin / difference
                     return beginningTopConstraintConstant + (translation.y * percentage)
@@ -64,6 +65,17 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     return absolutedTranslationY
                 }
             }()
+            
+            // shadow
+            if self.stackController?.parentViewController?.traitCollection.verticalSizeClass == .regular {
+                if (fullScreenConstant...middleConstant).contains(topSpaceConstant) {
+                    let max = middleConstant - fullScreenConstant
+                    let current = topSpaceConstant - fullScreenConstant
+                    let percentage = 1 - current / max
+                    self.stackController?.setShadowVisibly(percentage)
+                }
+            }
+            
             
             topSpaceConstraint.constant = topSpaceConstant
         }
@@ -205,6 +217,11 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                 
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: velocity, options: [.allowUserInteraction], animations: {
             self.stackController?.parentViewController?.view.layoutIfNeeded()
+            
+            if self.stackController?.parentViewController?.traitCollection.verticalSizeClass == .regular {
+                self.stackController?.isHiddenShadowView = mode != .fullScreen
+            }
+            
         }, completion: { finished in
             if finished {
                 currentParameter.floatingViewHeightConstraint?.constant = self.stackController?.currentFloatingViewController?.view.bounds.height ?? 0
@@ -341,6 +358,7 @@ extension FloatViewTransitionCoordinator {
         else { return }
         
         self.updateConstraints()
+        self.updateShadowView(with: traitCollection)
         
         if traitCollection.verticalSizeClass == .compact { // landscape
             #warning("NOT OPTIMIZED FOR NON FULL EDGE PHONE")
@@ -384,6 +402,21 @@ extension FloatViewTransitionCoordinator {
             current.portraitTopConstraint?.constant = constant
             current.landscapeTopConstraint?.constant = constant
             self.stackController?.setCurrentParameter(current)
+        }
+    }
+    
+    private func updateShadowView(with traitCollection: UITraitCollection) {
+        UIView.animate(withDuration: 0.3) {
+            if traitCollection.verticalSizeClass == .compact {
+                self.stackController?.isHiddenShadowView = true
+            } else {
+                if self.stackController?.currentFloatingMode == .fullScreen {
+                    self.stackController?.isHiddenShadowView = false
+                } else {
+                    self.stackController?.isHiddenShadowView = true
+                }
+                
+            }
         }
     }
 }

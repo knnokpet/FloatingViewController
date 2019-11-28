@@ -9,16 +9,17 @@ let shorterHeight: CGFloat = 120
 
 class FloatStackController: NSObject {
     
+    // MARK: - Properties
     weak var parentViewController: UIViewController?
     var transitionCoordinator: FloatViewTransitionCoordinator?
     
-    init(parentViewController: UIViewController) {
-        super.init()
-        self.parentViewController = parentViewController
-        self.transitionCoordinator = FloatViewTransitionCoordinator(stackController: self)
-    }
+    private var viewControllers: [UIViewController] = []
+    private var parameters: [FloatingViewLayoutConstraintParameter] = []
     
+    var currentFloatingViewHeightConstant: CGFloat = 0
+    internal var currentFloatingMode: FloatingMode = .middle
     
+    // MARK: Calculated Properties
     internal var currentFloatingViewController: UIViewController? {
         guard viewControllers.count > 0 else {
             return nil
@@ -31,10 +32,6 @@ class FloatStackController: NSObject {
             return nil
         }
         return parameters[0]
-    }
-    
-    func setCurrentParameter(_ parameter: FloatingViewLayoutConstraintParameter) {
-        parameters[0] = parameter
     }
     
     internal var previousFloatingViewController: UIViewController? {
@@ -55,23 +52,69 @@ class FloatStackController: NSObject {
         return self.viewControllers.count
     }
     
-    var currentFloatingViewHeightConstant: CGFloat = 0
+    // MARK: Shadow
+    var shadowView: UIView?
+    private let visibleShadowOpacity: Float = 0.2
+    var isHiddenShadowView: Bool = false {
+        didSet {
+            if isHiddenShadowView == true {
+                shadowView?.layer.opacity = 0.0
+            } else {
+                shadowView?.layer.opacity = visibleShadowOpacity
+            }
+        }
+    }
     
-    private var viewControllers: [UIViewController] = []
-    private var parameters: [FloatingViewLayoutConstraintParameter] = []
+    // MARK: - Initialize
+    init(parentViewController: UIViewController) {
+        super.init()
+        self.parentViewController = parentViewController
+        self.transitionCoordinator = FloatViewTransitionCoordinator(stackController: self)
+    }
     
-    internal var currentFloatingMode: FloatingMode = .middle
+    // MARK: - Setter
+    func setCurrentParameter(_ parameter: FloatingViewLayoutConstraintParameter) {
+        parameters[0] = parameter
+    }
     
+    func setShadowVisibly(_ percentage: CGFloat) {
+        shadowView?.layer.opacity = Float(percentage) * visibleShadowOpacity
+    }
+    
+    // MARK: - Manage Floating View Controller
     internal func add(childViewController viewController: UIViewController) {
         
         guard let parent = self.parentViewController else { return }
+        
+        if shadowView == nil {
+            let shadowView = UIView()
+            shadowView.translatesAutoresizingMaskIntoConstraints = false
+            shadowView.backgroundColor = UIColor.black
+            shadowView.layer.opacity = 0.0
+            shadowView.isUserInteractionEnabled = false
+            if parent is UITabBarController {
+                parent.view.insertSubview(shadowView, belowSubview: (parent as! UITabBarController).tabBar)
+            } else {
+                parent.view.addSubview(shadowView)
+            }
+            
+            shadowView.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: 0) .isActive = true
+            shadowView.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0).isActive = true
+            shadowView.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0).isActive = true
+            shadowView.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0).isActive = true
+            self.shadowView = shadowView
+        }
         
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         parent.addChild(viewController)
         if parent is UITabBarController {
             parent.view.insertSubview(viewController.view, belowSubview: (parent as! UITabBarController).tabBar)
         } else {
-            parent.view.addSubview(viewController.view)
+            if let shadowView = self.shadowView {
+                parent.view.insertSubview(viewController.view, aboveSubview: shadowView)
+            } else {
+                parent.view.addSubview(viewController.view)
+            }
         }
         
         
