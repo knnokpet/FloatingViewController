@@ -42,7 +42,9 @@ class ViewController: UIViewController {
         let test = UIStoryboard(name: "TestTableViewController", bundle: nil).instantiateInitialViewController() as! TestTableViewController
         let number = self.floatStackController.numberOfViewControllers
         test.number = number
-        self.floatStackController.add(childViewController: test)
+        
+        let nav = FloatingNavigationController()
+        self.floatStackController.add(childViewController: nav)
     }
     
     @IBAction func moveToMiddle(_ sender: Any) {
