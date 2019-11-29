@@ -17,6 +17,11 @@ class ViewController: UIViewController {
         let parent: UIViewController = self.parent ?? self
         self.floatStackController = FloatStackController(parentViewController: parent)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        show(self)
+    }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
