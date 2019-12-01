@@ -88,7 +88,18 @@ class FloatStackController: NSObject {
         }
         
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
-        parent.addChild(viewController)
+        
+        /*
+         Useally, to stack view controller,
+         1. AddChild
+         2. Add subview
+         3. did Move
+         (Written In Apple Document)
+         But sometimes, we should call 2. Add subview first
+         */
+        /* So, if not called child view's viewWillAppear,
+            It'll cause many layout bugs
+         */
         if parent is UITabBarController {
             parent.view.insertSubview(viewController.view, belowSubview: (parent as! UITabBarController).tabBar)
         } else {
@@ -98,7 +109,7 @@ class FloatStackController: NSObject {
                 parent.view.addSubview(viewController.view)
             }
         }
-        
+        parent.addChild(viewController)
         
         let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.bounds.height)
         topSpaceConstraint.priority = .defaultHigh
