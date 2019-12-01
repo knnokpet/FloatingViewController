@@ -54,7 +54,7 @@ extension Floatable {
         self.view.layer.borderColor = UIColor.black.withAlphaComponent(0.5).cgColor
         self.view.layer.borderWidth = hairLineWidth
         
-        self.view.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        self.view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
     func configureGesture() {
