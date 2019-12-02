@@ -295,6 +295,11 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [], animations: {
             self.stackController?.parentViewController?.view.layoutIfNeeded()
+            
+            if self.stackController?.parentViewController?.traitCollection.verticalSizeClass == .regular {
+                self.stackController?.shadowView?.isHiddenShadowView = true
+            }
+            
         }, completion: { finished in
             completionHandler?(finished)
         })

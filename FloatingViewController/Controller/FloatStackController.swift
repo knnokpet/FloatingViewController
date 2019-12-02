@@ -60,6 +60,12 @@ class FloatStackController: NSObject {
         super.init()
         self.parentViewController = parentViewController
         self.transitionCoordinator = FloatViewTransitionCoordinator(stackController: self)
+        
+        configureNotification()
+    }
+    
+    private func configureNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(removeCurrentViewController), name: .dismissFloatView, object: nil)
     }
     
     // MARK: - Setter
@@ -174,7 +180,7 @@ class FloatStackController: NSObject {
         self.parameters.insert(parameter, at: 0)
     }
     
-    internal func removeCurrentViewController() {
+    @objc internal func removeCurrentViewController() {
 
         guard
             self.viewControllers.count > 0,
