@@ -239,25 +239,26 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                 return
         }
 
+        #warning("In iOS12, it causes presentation with wrong animation")
+        // layoutIfNeeded のタイミングのせいか、この call の前後で parameter.activeTC が変化してる・・
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
         
         parameter.activeTopConstraint?.constant = parent.view.bounds.height / 2
         
         // For Previous
-        UIView.animate(withDuration: 0.3, animations: {
-            if let previousViewController = self.stackController?.previousFloatingViewController as? FloatingViewController {
+        if let previousViewController = self.stackController?.previousFloatingViewController as? Floatable {
+            UIView.animate(withDuration: 0.3, animations: {
                 previousViewController.shadowView.isHiddenShadowView = false
-            }
-        }) { (isFinished) in
-            if isFinished {
-                UIView.animate(withDuration: 0.3, animations: {
-                    if let previousViewController = self.stackController?.previousFloatingViewController as? FloatingViewController {
+            }) { (isFinished) in
+                if isFinished {
+                    UIView.animate(withDuration: 0.3, animations: {
                         previousViewController.view.layer.opacity = 0.0
-                    }
-                }, completion: nil)
+                    }, completion: nil)
+                }
             }
         }
+        
         
         // For Current
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.allowUserInteraction], animations: {
@@ -272,7 +273,7 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     func remove(completionHandler: ((Bool) -> Void)?) {
         
         guard
-            let _ = self.stackController?.parentViewController,
+            let parent = self.stackController?.parentViewController,
             let _ = self.stackController?.currentFloatingViewController,
             let parameter = self.stackController?.currentParameter
             else {
@@ -282,16 +283,9 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         // By calling layoutIfNeeded at once, let view layout be confirmed
         self.stackController?.parentViewController?.view.layoutIfNeeded()
         
-        let activeConstraints = [
-            parameter.activeTopConstraint
-            ]
-            .compactMap { $0 }
-            .filter { $0.isActive == true }
+        parameter.activeTopConstraint?.constant = parent.view.bounds.height
         
-        NSLayoutConstraint.deactivate(activeConstraints)
-        parameter.floatingViewHeightConstraint?.constant = 0
-        
-        if let previousViewController = self.stackController?.previousFloatingViewController as? FloatingViewController {
+        if let previousViewController = self.stackController?.previousFloatingViewController as? Floatable {
             previousViewController.shadowView.isHiddenShadowView = false
             previousViewController.view.layer.opacity = 1.0
             UIView.animate(withDuration: 0.3, animations: {
