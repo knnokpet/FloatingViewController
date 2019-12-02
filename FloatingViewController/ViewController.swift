@@ -40,10 +40,11 @@ class ViewController: UIViewController {
     @IBAction func show(_ sender: Any) {
         
         let test = UIStoryboard(name: "TestTableViewController", bundle: nil).instantiateInitialViewController() as! TestTableViewController
+        test.title = "今日も"
         let number = self.floatStackController.numberOfViewControllers
         test.number = number
         
-        let nav = FloatingNavigationController()
+        let nav = FloatingNavigationController(rootViewController: MyTableViewController())
         self.floatStackController.add(childViewController: nav)
     }
     

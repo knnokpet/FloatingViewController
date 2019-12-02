@@ -37,18 +37,18 @@
                                 </connections>
                             </containerView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="39" translatesAutoresizingMaskIntoConstraints="NO" id="gPx-gx-2tq">
-                                <rect key="frame" x="165" y="84" width="84.5" height="22"/>
+                                <rect key="frame" x="116" y="84" width="182.5" height="22"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cyu-oE-F7w">
-                                        <rect key="frame" x="0.0" y="0.0" width="26" height="22"/>
-                                        <state key="normal" image="plus.rectangle.on.rectangle" catalog="system"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="59" height="22"/>
+                                        <state key="normal" title="Add" image="plus.rectangle.on.rectangle" catalog="system"/>
                                         <connections>
                                             <action selector="show:" destination="BYZ-38-t0r" eventType="touchUpInside" id="XnT-ID-dEY"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kcA-z2-XNr">
-                                        <rect key="frame" x="65" y="0.0" width="19.5" height="22"/>
-                                        <state key="normal" image="trash" catalog="system"/>
+                                        <rect key="frame" x="98" y="0.0" width="84.5" height="22"/>
+                                        <state key="normal" title="Remove" image="trash" catalog="system"/>
                                         <connections>
                                             <action selector="remove:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pZy-n7-Mp2"/>
                                         </connections>
@@ -91,6 +91,14 @@
                                     </mask>
                                 </variation>
                             </stackView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0uT-fj-QgA">
+                                <rect key="frame" x="87" y="364.5" width="240" height="128"/>
+                                <color key="backgroundColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="eaR-SP-TXW"/>
+                                    <constraint firstAttribute="height" constant="128" id="rqD-TR-fDt"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -99,6 +107,8 @@
                             <constraint firstItem="jlO-W2-lkS" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" priority="750" id="GHB-c9-ftA"/>
                             <constraint firstItem="Wab-K9-h47" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="PCO-nh-dYX"/>
                             <constraint firstItem="gPx-gx-2tq" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="dmw-Pk-Dpe"/>
+                            <constraint firstItem="0uT-fj-QgA" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="fRe-uc-ThO"/>
+                            <constraint firstItem="0uT-fj-QgA" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="ga6-RZ-vyE"/>
                             <constraint firstItem="jlO-W2-lkS" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="m5w-w5-yl5"/>
                             <constraint firstItem="vcU-H3-LS0" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="qG6-ka-6OQ"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="jlO-W2-lkS" secondAttribute="trailing" id="qN2-Es-Va6"/>

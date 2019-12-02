@@ -19,6 +19,7 @@ class FloatingViewController: UIViewController, Floatable {
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         postNotificationForTraitCollectionDidChange(previousTraitCollection)
     }
 }

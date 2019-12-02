@@ -22,6 +22,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
     "n",
     ]
     
+    @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var numberLabel: UILabel!
     var number: Int = 0
@@ -31,6 +32,8 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
 
         self.numberLabel.text = "\(number)"
         
+        self.navigationItem.largeTitleDisplayMode = .always
+        //self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -69,7 +72,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
             break
         }
     }
-    
+    /*
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView.contentOffset.y < 0 else {
             return
@@ -94,7 +97,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
         
         NotificationCenter.default.post(name: .didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: translation,
                                                                                                       FloatNotificationProperty.velocity: velocity])
-    }
+    }*/
     
 }
 
