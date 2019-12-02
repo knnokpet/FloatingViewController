@@ -174,9 +174,8 @@ class FloatStackController: NSObject {
         self.parameters.insert(parameter, at: 0)
     }
     
-    //TODO: Fix a crash bug. Remove while adding animation, parameters store wrong value.
     internal func removeCurrentViewController() {
-        
+
         guard
             self.viewControllers.count > 0,
             self.parameters.count > 0
@@ -185,10 +184,13 @@ class FloatStackController: NSObject {
         
         self.transitionCoordinator?.remove(completionHandler: { (isFinished) in
             if isFinished {
-                
+                self.viewControllers[0].willMove(toParent: nil)
+                self.viewControllers[0].view.removeFromSuperview()
+                self.viewControllers[0].removeFromParent()
+                self.viewControllers.remove(at: 0)
+                self.parameters.remove(at: 0)
             }
-            self.viewControllers.remove(at: 0)
-            self.parameters.remove(at: 0)
+            
         })
     }
 }
