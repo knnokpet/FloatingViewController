@@ -48,6 +48,8 @@ class FloatingNavigationController: UINavigationController, Floatable {
         navigationView.delegate = self
         
         self.additionalSafeAreaInsets = UIEdgeInsets(top: navigationView.viewHeight, left: 0, bottom: 0, right: 0)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIWindow.keyboardWillShowNotification, object: nil)
     }
     
     // MARK: - Layout
@@ -60,15 +62,29 @@ class FloatingNavigationController: UINavigationController, Floatable {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         NotificationCenter.default.post(name: .didChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: self.traitCollection as Any])
     }
+    
+    // MARK: -
+    @objc func keyboardWillShow(_ notification: Notification) {
+        let duration = notification.userInfo?[UIWindow.keyboardAnimationDurationUserInfoKey]
+        let info: [AnyHashable: Any] = {
+            var dict: [AnyHashable: Any] = [FloatNotificationProperty.mode: FloatingMode.fullScreen]
+            if let duration = duration {
+                // too fast. 
+                //dict[FloatNotificationProperty.duration] = duration
+            }
+            return dict
+        }()
+        self.move(info)
+    }
 }
 
 extension FloatingNavigationController: TextFieldNavigationViewDelegate {
     func didBeginEditingTextField(_ textFieldNavigationView: TextFieldNavigationView, textField: UITextField) {
-        
+        //self.move(.fullScreen)
     }
     
     func didPushCloseButton(_ textFieldNavigationView: TextFieldNavigationView) {
-        NotificationCenter.default.post(name: .dismissFloatView, object: nil)
+        self.dismissFloatViewController()
     }
     
     

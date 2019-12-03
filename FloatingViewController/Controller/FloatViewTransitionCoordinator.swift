@@ -214,8 +214,10 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
             
             return abs(velocityFromGesture.y / merginBetweenTopConstraints)
         }()
+        
+        let duration: Double = (notification?.userInfo?[FloatNotificationProperty.duration] as? NSNumber)?.doubleValue ?? 0.5
                 
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: velocity, options: [.allowUserInteraction], animations: {
+        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: velocity, options: [.allowUserInteraction], animations: {
             self.stackController?.parentViewController?.view.layoutIfNeeded()
             
             if self.stackController?.parentViewController?.traitCollection.verticalSizeClass == .regular {

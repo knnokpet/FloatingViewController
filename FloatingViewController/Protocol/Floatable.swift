@@ -7,7 +7,8 @@ protocol Floatable where Self: UIViewController {
     func setupViews()
     func configureGesture()
     
-    func dismiss()
+    func dismissFloatViewController()
+    func move(_ info: [AnyHashable: Any]?)
     
     func postNotificationForWillTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator)
     func postNotificationForTraitCollectionDidChange(_ previousTraitCollection: UITraitCollection?)
@@ -64,8 +65,12 @@ extension Floatable {
         self.view.addGestureRecognizer(panGestureRecognizer)
     }
     
-    func dismiss() {
+    func dismissFloatViewController() {
         NotificationCenter.default.post(name: .dismissFloatView, object: self, userInfo: nil)
+    }
+    
+    func move(_ info: [AnyHashable: Any]?) {
+        NotificationCenter.default.post(name: .moveFloatView, object: self, userInfo: info)
     }
 }
 

@@ -66,6 +66,7 @@ class FloatStackController: NSObject {
     
     private func configureNotification() {
         NotificationCenter.default.addObserver(self, selector: #selector(removeCurrentViewController), name: .dismissFloatView, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(move(_:)), name: .moveFloatView, object: nil)
     }
     
     // MARK: - Setter
@@ -198,5 +199,10 @@ class FloatStackController: NSObject {
             }
             
         })
+    }
+    
+    @objc internal func move(_ notification: Notification) {
+        guard let toMode = notification.userInfo?[FloatNotificationProperty.mode] as? FloatingMode else { return }
+        self.transitionCoordinator?.move(mode: toMode, notification: notification)
     }
 }
