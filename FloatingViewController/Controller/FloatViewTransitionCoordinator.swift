@@ -54,13 +54,13 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                 let bottomConstant = TopLayoutConstraintCaluculator.calculatedConstant(for: .bottom, parentViewController: self.stackController?.parentViewController)
                 
                 if absolutedTranslationY < fullScreenConstant {
-                    let difference = abs(absolutedTranslationY - fullScreenConstant) + mergin
-                    let percentage = mergin / difference
-                    return beginningTopConstraintConstant + (translation.y * percentage)
+                    let difference = abs(absolutedTranslationY - fullScreenConstant)
+                    let percentage = (mergin) / (difference + mergin)
+                    return fullScreenConstant - (mergin - mergin * percentage)
                 } else if absolutedTranslationY > bottomConstant {
-                    let difference = abs(absolutedTranslationY - bottomConstant) + mergin
-                    let percentage = mergin / difference
-                    return beginningTopConstraintConstant + (translation.y * percentage)
+                    let difference = abs(absolutedTranslationY - bottomConstant)
+                    let percentage = (mergin) / (difference + mergin)
+                    return bottomConstant + (mergin - mergin * percentage)
                 } else {
                     return absolutedTranslationY
                 }
