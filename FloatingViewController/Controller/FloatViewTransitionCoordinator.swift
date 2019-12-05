@@ -123,6 +123,8 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                 self.move(mode: toMode, notification: notification)
             }
         } else {
+            #warning("TO DO ADJUSTMENT")
+            let _ = recognizer.location(in: self.stackController?.parentViewController?.view)
             if translation.y < -50 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -131,6 +133,9 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     case .fullScreen:
                         return .fullScreen
                     case .bottom:
+                        if translation.y < -400 {
+                            return .fullScreen
+                        }
                         return .middle
                     }
                 }()
@@ -141,6 +146,9 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     case .middle:
                         return .bottom
                     case .fullScreen:
+                        if translation.y > 400 {
+                            return .bottom
+                        }
                         return .middle
                     case .bottom:
                         return .bottom
