@@ -56,11 +56,9 @@ class FloatingNavigationController: UINavigationController, Floatable {
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
         
-        NotificationCenter.default.post(name: .willChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: newCollection as Any])
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        NotificationCenter.default.post(name: .didChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: self.traitCollection as Any])
     }
     
     // MARK: -

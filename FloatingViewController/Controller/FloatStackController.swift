@@ -1,7 +1,7 @@
 import UIKit
 
 public enum FloatingMode {
-    case fullScreen, middle, bottom
+    case fullScreen, middle, bottom, progressing
 }
 
 let tallerHeight: CGFloat = 360
@@ -12,6 +12,7 @@ class FloatStackController: NSObject {
     // MARK: - Properties
     weak var parentViewController: UIViewController?
     var transitionCoordinator: FloatViewTransitionCoordinator?
+    private(set) lazy var containerViewController = FloatViewContainerViewController()
     
     private var viewControllers: [UIViewController] = []
     private var parameters: [FloatingViewLayoutConstraintParameter] = []
@@ -52,16 +53,30 @@ class FloatStackController: NSObject {
         return self.viewControllers.count
     }
     
-    // MARK: Shadow
-    var shadowView: CoverShadowView?
-    
     // MARK: - Initialize
     init(parentViewController: UIViewController) {
         super.init()
         self.parentViewController = parentViewController
         self.transitionCoordinator = FloatViewTransitionCoordinator(stackController: self)
+        self.transitionCoordinator?.delegate = self
         
+        configureContainerViewController()
         configureNotification()
+    }
+    
+    private func configureContainerViewController() {
+        
+        guard let parentViewController = self.parentViewController else { return }
+        
+        parentViewController.addChild(self.containerViewController)
+        parentViewController.view.addSubview(self.containerViewController.view)
+        self.containerViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        self.containerViewController.view.topAnchor.constraint(equalTo: parentViewController.view.topAnchor).isActive = true
+        self.containerViewController.view.leftAnchor.constraint(equalTo: parentViewController.view.leftAnchor).isActive = true
+        self.containerViewController.view.rightAnchor.constraint(equalTo: parentViewController.view.rightAnchor).isActive = true
+        self.containerViewController.view.bottomAnchor.constraint(equalTo: parentViewController.view.bottomAnchor).isActive = true
+        self.containerViewController.didMove(toParent: self.parentViewController)
+        self.containerViewController.delegate = self
     }
     
     private func configureNotification() {
@@ -77,48 +92,15 @@ class FloatStackController: NSObject {
     // MARK: - Manage Floating View Controller
     internal func add(childViewController viewController: UIViewController) {
         
-        guard let parent = self.parentViewController else { return }
-        
-        if shadowView == nil {
-            let shadowView = CoverShadowView()
-            if parent is UITabBarController {
-                parent.view.insertSubview(shadowView, belowSubview: (parent as! UITabBarController).tabBar)
-            } else {
-                parent.view.addSubview(shadowView)
-            }
-            
-            shadowView.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: 0) .isActive = true
-            shadowView.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0).isActive = true
-            shadowView.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0).isActive = true
-            shadowView.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0).isActive = true
-            self.shadowView = shadowView
-        }
+        guard let _ = self.parentViewController else { return }
         
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         
-        /*
-         Useally, to stack view controller,
-         1. AddChild
-         2. Add subview
-         3. did Move
-         (Written In Apple Document)
-         But sometimes, we should call 2. Add subview first
-         */
-        /* So, if not called child view's viewWillAppear,
-            It'll cause many layout bugs
-         */
-        if parent is UITabBarController {
-            parent.view.insertSubview(viewController.view, belowSubview: (parent as! UITabBarController).tabBar)
-        } else {
-            if let shadowView = self.shadowView {
-                parent.view.insertSubview(viewController.view, aboveSubview: shadowView)
-            } else {
-                parent.view.addSubview(viewController.view)
-            }
-        }
-        parent.addChild(viewController)
+        containerViewController.addChild(viewController)
+        containerViewController.view.insertSubview(viewController.view, aboveSubview: containerViewController.shadowView)
         
-        let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.bounds.height)
+        
+        let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: containerViewController.view.topAnchor, constant: containerViewController.view.bounds.height)
         topSpaceConstraint.priority = .defaultHigh
         topSpaceConstraint.isActive = true
         topSpaceConstraint.identifier = "portrait top"
@@ -127,36 +109,36 @@ class FloatStackController: NSObject {
         strechingHeightConstraint.priority = .defaultLow
         strechingHeightConstraint.isActive = true
         
-        let left = viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: 0.0)
+        let left = viewController.view.leftAnchor.constraint(equalTo: containerViewController.view.leftAnchor, constant: 0.0)
         left.isActive = true
         left.identifier = "portrait left"
         
-        let right = viewController.view.rightAnchor.constraint(equalTo: parent.view.rightAnchor, constant: 0.0)
+        let right = viewController.view.rightAnchor.constraint(equalTo: containerViewController.view.rightAnchor, constant: 0.0)
         right.isActive = true
         right.identifier = "portrait right"
         
-        let bottom = viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0)
+        let bottom = viewController.view.bottomAnchor.constraint(equalTo: containerViewController.view.bottomAnchor, constant: 0.0)
         bottom.isActive = true
         bottom.identifier = "portrait bottom"
         
         //
-        let landscapeTop = viewController.view.topAnchor.constraint(equalTo: parent.view.topAnchor, constant: parent.view.safeAreaInsets.top)
+        let landscapeTop = viewController.view.topAnchor.constraint(equalTo: containerViewController.view.topAnchor, constant: containerViewController.view.safeAreaInsets.top)
         landscapeTop.priority = .defaultHigh
         landscapeTop.isActive = false
         landscapeTop.identifier = "landscape top"
         
-        let landscapeLeft = viewController.view.leftAnchor.constraint(equalTo: parent.view.leftAnchor, constant: parent.view.safeAreaInsets.top)
+        let landscapeLeft = viewController.view.leftAnchor.constraint(equalTo: containerViewController.view.leftAnchor, constant: containerViewController.view.safeAreaInsets.top)
         landscapeLeft.isActive = false
         landscapeLeft.identifier = "landscape left"
 
-        let screenPercentage: CGFloat = UIScreen.main.bounds.width / UIScreen.main.bounds.height
+        let screenPercentage: CGFloat = containerViewController.view.bounds.width / containerViewController.view.bounds.height
         
-        let usableHeight: CGFloat = parent.view.bounds.width - (parent.view.safeAreaInsets.left + parent.view.safeAreaInsets.right)
+        let usableHeight: CGFloat = containerViewController.view.bounds.width - (containerViewController.view.safeAreaInsets.left + containerViewController.view.safeAreaInsets.right)
         let widthConstraint = viewController.view.widthAnchor.constraint(equalToConstant: usableHeight * screenPercentage * 1.4)
         widthConstraint.isActive = false
         widthConstraint.identifier = "landscape width"
         
-        let landscapeBottom = viewController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor, constant: 0.0)
+        let landscapeBottom = viewController.view.bottomAnchor.constraint(equalTo: containerViewController.view.bottomAnchor, constant: 0.0)
         landscapeBottom.isActive = false
         landscapeBottom.identifier = "landscape bottom"
         
@@ -166,7 +148,11 @@ class FloatStackController: NSObject {
         self.add(viewController: viewController, parameter: parameter)
         
         
-        viewController.didMove(toParent: parent)
+        viewController.didMove(toParent: containerViewController)
+        
+        if viewController is OverlayViewController {
+            (viewController as! OverlayViewController).delegate = self
+        }
         
         self.transitionCoordinator?.present(completionHandler: { (finished) in
             if finished {
@@ -204,5 +190,73 @@ class FloatStackController: NSObject {
     @objc internal func move(_ notification: Notification) {
         guard let toMode = notification.userInfo?[FloatNotificationProperty.mode] as? FloatingMode else { return }
         self.transitionCoordinator?.move(mode: toMode, notification: notification)
+    }
+    
+}
+
+extension FloatStackController: OverlayViewControllerDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        debugPrint(shouldTranslateView(following: scrollView))
+        guard shouldTranslateView(following: scrollView) else { return }
+        self.currentFloatingMode = .progressing
+        translateView(following: scrollView)
+    }
+    
+    func scrollView(_ scrollView: UIScrollView, willEndScrollingWithVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        switch self.currentFloatingMode {
+        case .progressing:
+            return
+        case .fullScreen:
+            break
+        case .bottom, .middle:
+            targetContentOffset.pointee = .zero
+        }
+        self.transitionCoordinator?.move(mode: .bottom)
+    }
+    
+    func shouldTranslateView(following scrollView: UIScrollView) -> Bool {
+        guard scrollView.isTracking else { return false }
+        
+        let offset = scrollView.contentOffset.y
+        switch self.currentFloatingMode {
+        case .progressing:
+            return true
+        case .fullScreen:
+            return offset < 0
+        case .bottom:
+            return offset > 0
+        case .middle:
+            return false
+        }
+    }
+    
+    func translateView(following scrollView: UIScrollView) {
+        scrollView.contentOffset = .zero
+        let translation = scrollView.panGestureRecognizer.translation(in: self.currentFloatingViewController?.view)
+        let dict: [AnyHashable: Any] = [FloatNotificationProperty.translation: translation]
+        debugPrint(translation)
+        NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: dict)
+    }
+}
+
+extension FloatStackController: FloatViewContainerViewControllerDelegate {
+    func floatViewContainerViewControllerWillTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+    }
+    
+    func floatViewContainerViewControllertraitCollectionDidChange(_ previousTraitCollection: UITraitCollection?, currentTraitCollection: UITraitCollection) {
+        self.transitionCoordinator?.handleTraitcollectionDidChange(previousTraitCollection, currentTraitCollection: currentTraitCollection)
+    }
+    
+    
+}
+
+extension FloatStackController: FloatViewTransitionCoordinatorDelegate {
+    func didChangeBackgroundShadowViewVisibility(_ isHidden: Bool, percentage: Float?) {
+        if let percentage = percentage {
+            self.containerViewController.shadowView.setShadowVisibility(CGFloat(percentage))
+        } else {
+            self.containerViewController.shadowView.isHiddenShadowView = isHidden
+        }
     }
 }

@@ -32,7 +32,7 @@ class TestTableViewController: FloatingViewController, UITableViewDelegate, UITa
 
         self.numberLabel.text = "\(number)"
         
-        self.navigationItem.largeTitleDisplayMode = .always
+        //self.navigationItem.largeTitleDisplayMode = .always
         //self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 

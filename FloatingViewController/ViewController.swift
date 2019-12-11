@@ -14,8 +14,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let parent: UIViewController = self.parent ?? self
-        self.floatStackController = FloatStackController(parentViewController: parent)
+        self.floatStackController = FloatStackController(parentViewController: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -45,7 +44,7 @@ class ViewController: UIViewController {
         test.number = number
         
         let nav = FloatingNavigationController(rootViewController: MyTableViewController())
-        self.floatStackController.add(childViewController: nav)
+        self.floatStackController.add(childViewController: OverlayViewController())
     }
     
     @IBAction func moveToMiddle(_ sender: Any) {

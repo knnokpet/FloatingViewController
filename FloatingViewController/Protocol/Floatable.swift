@@ -10,8 +10,6 @@ protocol Floatable where Self: UIViewController {
     func dismissFloatViewController()
     func move(_ info: [AnyHashable: Any]?)
     
-    func postNotificationForWillTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator)
-    func postNotificationForTraitCollectionDidChange(_ previousTraitCollection: UITraitCollection?)
 }
 
 private let cornerRadius: CGFloat = 12.0
@@ -96,16 +94,5 @@ private extension UIViewController {
         default:
             break
         }
-    }
-}
-
-// MARK: Notification
-extension Floatable {
-    func postNotificationForWillTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-        NotificationCenter.default.post(name: .willChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: newCollection as Any])
-    }
-    
-    func postNotificationForTraitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        NotificationCenter.default.post(name: .didChangeTraitCollection, object: self, userInfo: [FloatNotificationProperty.traitcollection: self.traitCollection as Any])
     }
 }

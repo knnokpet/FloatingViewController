@@ -5,7 +5,15 @@ class MyMyCell: UITableViewCell {
     
 }
 
-class MyTableViewController: UITableViewController {
+class MyTableViewController: UITableViewController, Floatable {
+    let visualEffectView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+    
+    let shadowView: CoverShadowView = CoverShadowView()
+    
+    
+    override func loadView() {
+        self.tableView = MyTableView()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,50 +54,37 @@ class MyTableViewController: UITableViewController {
 
         return cell
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    
+    var isFloating: Bool = false
+        
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //debugPrint("scrollViewDidScroll")
+        return
+        if scrollView.isDragging && scrollView.contentOffset.y < (-scrollView.safeAreaInsets.top) {
+            
+            isFloating = true
+            
+            guard let navi = self.navigationController else { return }
+            debugPrint("goth", scrollView.panGestureRecognizer.translation(in: self.view.window?.rootViewController?.view))
+            NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: scrollView.panGestureRecognizer.translation(in: navi.view),
+            FloatNotificationProperty.recognizer: scrollView.panGestureRecognizer])
+            //debugPrint(scrollView.panGestureRecognizer.translation(in: self.view))
+        } else if isFloating && scrollView.isDragging && scrollView.contentOffset.y > (-scrollView.safeAreaInsets.top) {
+            guard let navi = self.navigationController else { return }
+            debugPrint("goth", scrollView.panGestureRecognizer.translation(in: self.view.window?.rootViewController?.view))
+            NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: scrollView.panGestureRecognizer.translation(in: navi.view),
+            FloatNotificationProperty.recognizer: scrollView.panGestureRecognizer])
+        }
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+    
+    override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        return
+        guard let navi = self.navigationController else { return }
+        NotificationCenter.default.post(name: .didEndFloatViewTranslation, object: self, userInfo: [FloatNotificationProperty.translation: scrollView.panGestureRecognizer.translation(in: navi.view),
+        FloatNotificationProperty.recognizer: scrollView.panGestureRecognizer])
+        
+        isFloating = false
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+    
 
 }

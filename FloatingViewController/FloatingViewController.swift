@@ -15,12 +15,10 @@ class FloatingViewController: UIViewController, Floatable {
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
         
-        postNotificationForWillTransition(to: newCollection, with: coordinator)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        postNotificationForTraitCollectionDidChange(previousTraitCollection)
     }
 }
 
