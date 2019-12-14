@@ -48,15 +48,15 @@ class ViewController: UIViewController {
     }
     
     @IBAction func moveToMiddle(_ sender: Any) {
-        self.floatStackController.transitionCoordinator?.move(mode: .middle)
+        self.floatStackController.transitionCoordinator?.move(mode: .middle, recognizer: nil, velocity: nil, duration: nil)
     }
     
     @IBAction func moveToFullScreen(_ sender: Any) {
-        self.floatStackController.transitionCoordinator?.move(mode: .fullScreen)
+        self.floatStackController.transitionCoordinator?.move(mode: .fullScreen, recognizer: nil, velocity: nil, duration: nil)
     }
     
     @IBAction func moveTobottom(_ sender: Any) {
-        self.floatStackController.transitionCoordinator?.move(mode: .bottom)
+        self.floatStackController.transitionCoordinator?.move(mode: .bottom, recognizer: nil, velocity: nil, duration: nil)
     }
     
 }

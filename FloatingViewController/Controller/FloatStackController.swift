@@ -19,6 +19,7 @@ class FloatStackController: NSObject {
     
     var currentFloatingViewHeightConstant: CGFloat = 0
     internal var currentFloatingMode: FloatingMode = .middle
+    var floatingModeBeforeProgressing: FloatingMode = .middle
     
     // MARK: Calculated Properties
     internal var currentFloatingViewController: UIViewController? {
@@ -189,14 +190,18 @@ class FloatStackController: NSObject {
     
     @objc internal func move(_ notification: Notification) {
         guard let toMode = notification.userInfo?[FloatNotificationProperty.mode] as? FloatingMode else { return }
-        self.transitionCoordinator?.move(mode: toMode, notification: notification)
+        self.transitionCoordinator?.move(mode: toMode, recognizer: nil, velocity: nil, duration: nil)
     }
     
 }
 
 extension FloatStackController: OverlayViewControllerDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.floatingModeBeforeProgressing = self.currentFloatingMode
+        self.transitionCoordinator?.beginFloatViewTranslation()
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        debugPrint(shouldTranslateView(following: scrollView))
         guard shouldTranslateView(following: scrollView) else { return }
         self.currentFloatingMode = .progressing
         translateView(following: scrollView)
@@ -204,14 +209,13 @@ extension FloatStackController: OverlayViewControllerDelegate {
     
     func scrollView(_ scrollView: UIScrollView, willEndScrollingWithVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         switch self.currentFloatingMode {
-        case .progressing:
-            return
         case .fullScreen:
             break
-        case .bottom, .middle:
+        case .bottom, .middle, .progressing:
             targetContentOffset.pointee = .zero
         }
-        self.transitionCoordinator?.move(mode: .bottom)
+        let translation = scrollView.panGestureRecognizer.translation(in: self.currentFloatingViewController?.view)
+        self.transitionCoordinator?.endFloatViewTranslation(translation, recognizer: scrollView.panGestureRecognizer)
     }
     
     func shouldTranslateView(following scrollView: UIScrollView) -> Bool {
@@ -226,16 +230,14 @@ extension FloatStackController: OverlayViewControllerDelegate {
         case .bottom:
             return offset > 0
         case .middle:
-            return false
+            return true
         }
     }
     
     func translateView(following scrollView: UIScrollView) {
         scrollView.contentOffset = .zero
         let translation = scrollView.panGestureRecognizer.translation(in: self.currentFloatingViewController?.view)
-        let dict: [AnyHashable: Any] = [FloatNotificationProperty.translation: translation]
-        debugPrint(translation)
-        NotificationCenter.default.post(name: .didChangeFloatViewTranslation, object: self, userInfo: dict)
+        self.transitionCoordinator?.translateFloatView(translation)
     }
 }
 

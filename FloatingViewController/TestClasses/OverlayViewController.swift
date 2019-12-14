@@ -1,6 +1,7 @@
 import UIKit
 
 protocol OverlayViewControllerDelegate: class {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
     func scrollViewDidScroll(_ scrollView: UIScrollView)
     func scrollView(_ scrollView: UIScrollView,
                     willEndScrollingWithVelocity velocity: CGPoint,
@@ -40,14 +41,7 @@ class OverlayViewController: UIViewController, Floatable, UITableViewDelegate, U
         self.tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         
         setupViews()
-        self.tableView.isHidden = true
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        //debugPrint("view did appear", "OverlayViewController")
-    }
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 20
@@ -63,6 +57,10 @@ class OverlayViewController: UIViewController, Floatable, UITableViewDelegate, U
         // Configure the cell...
 
         return cell
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        delegate?.scrollViewWillBeginDragging(scrollView)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

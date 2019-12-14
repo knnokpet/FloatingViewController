@@ -19,12 +19,12 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
     }
     
     private func registerNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerBegan(_:)), name: .didBeginFloatViewTranslation, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerBeganTranslation(_:)), name: .didBeginFloatViewTranslation, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerTranslation(_:)), name: .didChangeFloatViewTranslation, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerEnd(_:)), name: .didEndFloatViewTranslation, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFloatViewControllerEndTranslation(_:)), name: .didEndFloatViewTranslation, object: nil)
     }
     
-    @objc public func handleFloatViewControllerBegan(_ notification: Notification) {
+    func beginFloatViewTranslation() {
         guard
             let currentFloatingViewController = self.stackController?.currentFloatingViewController,
             let currentParameter = self.stackController?.currentParameter
@@ -37,13 +37,10 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         
         beginningTopConstraintConstant = currentParameter.activeTopConstraint?.constant ?? 0
     }
-    
-    @objc public func handleFloatViewControllerTranslation(_ notification: Notification) {
-        guard
-            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint,
-            let currentParameter = self.stackController?.currentParameter
-            else {
-                return
+        
+    func translateFloatView(_ translation: CGPoint) {
+        guard let currentParameter = self.stackController?.currentParameter else {
+            return
         }
         
         if let topSpaceConstraint = currentParameter.activeTopConstraint {
@@ -88,20 +85,16 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         currentParameter.floatingViewHeightConstraint?.constant =  (self.stackController?.currentFloatingViewHeightConstant ?? 0) + (-translation.y)
     }
     
-    @objc public func handleFloatViewControllerEnd(_ notification: Notification) {
-        guard
-            let floatStackController = self.stackController,
-            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint,
-            let recognizer = notification.userInfo?[FloatNotificationProperty.recognizer] as? UIPanGestureRecognizer
-            else {
-                return
+    func endFloatViewTranslation(_ translation: CGPoint, recognizer: UIPanGestureRecognizer) {
+        guard let floatStackController = self.stackController else {
+            return
         }
-        
+                
         let velocity: CGPoint = recognizer.velocity(in: self.stackController?.containerViewController.view)
         
         if abs(translation.y) < 50 {
             if (-100...100).contains(velocity.y) {
-                self.move(mode: floatStackController.currentFloatingMode, notification: notification)
+                self.move(mode: floatStackController.floatingModeBeforeProgressing, recognizer: recognizer, velocity: nil, duration: nil)
             } else if velocity.y < -100 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -112,10 +105,19 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     case .bottom:
                         return .middle
                     case .progressing:
-                        return .progressing
+                        switch floatStackController.floatingModeBeforeProgressing {
+                        case .fullScreen:
+                            return .fullScreen
+                        case .middle:
+                            return .fullScreen
+                        case .bottom:
+                            return .middle
+                        default:
+                            return .middle
+                        }
                     }
                 }()
-                self.move(mode: toMode, notification: nil)
+                self.move(mode: toMode, recognizer: nil, velocity: nil, duration: nil)
             } else if velocity.y > 100 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -126,10 +128,19 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     case .bottom:
                         return .bottom
                     case .progressing:
-                        return .progressing
+                        switch floatStackController.floatingModeBeforeProgressing {
+                        case .fullScreen:
+                            return .middle
+                        case .middle:
+                            return .bottom
+                        case .bottom:
+                            return .bottom
+                        default:
+                            return .middle
+                        }
                     }
                 }()
-                self.move(mode: toMode, notification: notification)
+                self.move(mode: toMode, recognizer: recognizer, velocity: nil, duration: nil)
             }
         } else {
             #warning("TO DO ADJUSTMENT")
@@ -147,10 +158,22 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         }
                         return .middle
                     case .progressing:
-                        return .progressing
+                        switch floatStackController.floatingModeBeforeProgressing {
+                        case .fullScreen:
+                            return .fullScreen
+                        case .middle:
+                            return .fullScreen
+                        case .bottom:
+                            if translation.y < -400 {
+                                return .fullScreen
+                            }
+                            return .middle
+                        default:
+                            return .middle
+                        }
                     }
                 }()
-                self.move(mode: toMode, notification: nil)
+                self.move(mode: toMode, recognizer: nil, velocity: nil, duration: nil)
             } else if translation.y > 50 {
                 let toMode: FloatingMode = {
                     switch floatStackController.currentFloatingMode {
@@ -164,13 +187,25 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     case .bottom:
                         return .bottom
                     case .progressing:
-                        return .progressing
+                        switch floatStackController.floatingModeBeforeProgressing {
+                        case .fullScreen:
+                            if translation.y > 400 {
+                                return .bottom
+                            }
+                            return .middle
+                        case .middle:
+                            return .bottom
+                        case .bottom:
+                            return .bottom
+                        default:
+                            return .middle
+                        }
                     }
                 }()
-                self.move(mode: toMode, notification: nil)
+                self.move(mode: toMode, recognizer: nil, velocity: nil, duration: nil)
             } else {
                 if (-100...100).contains(velocity.y) {
-                    self.move(mode: floatStackController.currentFloatingMode, notification: notification)
+                    self.move(mode: floatStackController.floatingModeBeforeProgressing, recognizer: recognizer, velocity: nil, duration: nil)
                 } else if velocity.y < -100 {
                     let toMode: FloatingMode = {
                         switch floatStackController.currentFloatingMode {
@@ -181,10 +216,19 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         case .bottom:
                             return .middle
                         case .progressing:
-                            return .progressing
+                            switch floatStackController.floatingModeBeforeProgressing {
+                            case .fullScreen:
+                                return .fullScreen
+                            case .middle:
+                                return .fullScreen
+                            case .bottom:
+                                return .middle
+                            default:
+                                return .middle
+                            }
                         }
                     }()
-                    self.move(mode: toMode, notification: notification)
+                    self.move(mode: toMode, recognizer: recognizer, velocity: nil, duration: nil)
                 } else if velocity.y > 100 {
                     let toMode: FloatingMode = {
                         switch floatStackController.currentFloatingMode {
@@ -195,10 +239,19 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                         case .bottom:
                             return .bottom
                         case .progressing:
-                            return .progressing
+                            switch floatStackController.floatingModeBeforeProgressing {
+                            case .fullScreen:
+                                return .middle
+                            case .middle:
+                                return .bottom
+                            case .bottom:
+                                return .bottom
+                            default:
+                                return .middle
+                            }
                         }
                     }()
-                    self.move(mode: toMode, notification: notification)
+                    self.move(mode: toMode, recognizer: recognizer, velocity: nil, duration: nil)
                 }
             }
             
@@ -206,7 +259,73 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         }
     }
     
-    func move(mode: FloatingMode, notification: Notification? = nil) {
+    
+    @objc public func handleFloatViewControllerBeganTranslation(_ notification: Notification) {
+        beginFloatViewTranslation()
+    }
+    
+    @objc public func handleFloatViewControllerTranslation(_ notification: Notification) {
+        guard
+            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint
+            else {
+                return
+        }
+        
+        translateFloatView(translation)
+    }
+    
+    @objc public func handleFloatViewControllerEndTranslation(_ notification: Notification) {
+        
+        guard
+            let translation = notification.userInfo?[FloatNotificationProperty.translation] as? CGPoint,
+            let recognizer = notification.userInfo?[FloatNotificationProperty.recognizer] as? UIPanGestureRecognizer
+            else {
+                return
+        }
+        
+        endFloatViewTranslation(translation, recognizer: recognizer)
+    }
+    /*
+    func move(mode: FloatingMode, velocity: Float?, duration: Double?) {
+        
+        /*
+        Use standard UIView animation with layoutIfNeeded
+        Always deactivate constraints first
+        Hold to your deactivated constraints strongly
+        */
+        
+        guard
+            let currentParameter = self.stackController?.currentParameter,
+            let topSpaceConstraint = currentParameter.activeTopConstraint
+            else {
+                return
+        }
+        
+        let topSpaceConstraintConstantForMode = TopLayoutConstraintCaluculator.calculatedConstant(for: mode, containerViewController: self.stackController?.containerViewController)
+        
+        NSLayoutConstraint.activate([topSpaceConstraint])
+        topSpaceConstraint.constant = topSpaceConstraintConstantForMode
+        self.stackController?.currentFloatingMode = mode
+        
+        let v: Float = velocity ?? 0.0
+        let d: Double = duration ?? 0.5
+        
+        UIView.animate(withDuration: d, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: CGFloat(v), options: [.allowUserInteraction], animations: {
+            self.stackController?.containerViewController.view.layoutIfNeeded()
+            
+            if self.stackController?.containerViewController.traitCollection.verticalSizeClass == .regular {
+                self.delegate?.didChangeBackgroundShadowViewVisibility((mode != .fullScreen), percentage: nil)
+            }
+            
+        }, completion: { finished in
+            if finished {
+                currentParameter.floatingViewHeightConstraint?.constant = self.stackController?.currentFloatingViewController?.view.bounds.height ?? 0
+                self.stackController?.currentFloatingViewHeightConstant = self.stackController?.currentFloatingViewController?.view.bounds.height ?? 0
+            }
+        })
+    }*/
+    
+    func move(mode: FloatingMode, recognizer: UIPanGestureRecognizer?, velocity: Float?, duration: Double?) {
         
         /*
          Use standard UIView animation with layoutIfNeeded
@@ -228,21 +347,21 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         topSpaceConstraint.constant = topSpaceConstraintConstantForMode
         self.stackController?.currentFloatingMode = mode
         
-        let velocity: CGFloat = {
-            guard
-                let recognizer = (notification?.userInfo?[FloatNotificationProperty.recognizer] as? UIPanGestureRecognizer) else
-            {
-                return 0.0
+        let velo: CGFloat = {
+            if let recognizer = recognizer {
+                let velocityFromGesture: CGPoint = recognizer.velocity(in: self.stackController?.containerViewController.view)
+                
+                return abs(velocityFromGesture.y / merginBetweenTopConstraints)
+            } else if let velo = velocity {
+                return CGFloat(velo)
             }
             
-            let velocityFromGesture: CGPoint = recognizer.velocity(in: self.stackController?.containerViewController.view)
-            
-            return abs(velocityFromGesture.y / merginBetweenTopConstraints)
+            return 0.0
         }()
         
-        let duration: Double = (notification?.userInfo?[FloatNotificationProperty.duration] as? NSNumber)?.doubleValue ?? 0.5
+        let dur: Double = duration ?? 0.5
                 
-        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: velocity, options: [.allowUserInteraction], animations: {
+        UIView.animate(withDuration: dur, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: velo, options: [.allowUserInteraction], animations: {
             self.stackController?.containerViewController.view.layoutIfNeeded()
             
             if self.stackController?.containerViewController.traitCollection.verticalSizeClass == .regular {
