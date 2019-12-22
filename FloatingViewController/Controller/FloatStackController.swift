@@ -98,11 +98,10 @@ class FloatStackController: NSObject {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         
         containerViewController.addChild(viewController)
-        containerViewController.view.insertSubview(viewController.view, aboveSubview: containerViewController.shadowView)
-        
+        containerViewController.view.addSubview(viewController.view)
         
         let topSpaceConstraint = viewController.view.topAnchor.constraint(equalTo: containerViewController.view.topAnchor, constant: containerViewController.view.bounds.height)
-        topSpaceConstraint.priority = .defaultHigh
+        topSpaceConstraint.priority = .required
         topSpaceConstraint.isActive = true
         topSpaceConstraint.identifier = "portrait top"
         
@@ -119,6 +118,7 @@ class FloatStackController: NSObject {
         right.identifier = "portrait right"
         
         let bottom = viewController.view.bottomAnchor.constraint(equalTo: containerViewController.view.bottomAnchor, constant: 0.0)
+        bottom.priority = .defaultHigh
         bottom.isActive = true
         bottom.identifier = "portrait bottom"
         
