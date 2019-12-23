@@ -20,6 +20,7 @@ class FloatStackController: NSObject {
     var currentFloatingViewHeightConstant: CGFloat = 0
     internal var currentFloatingMode: FloatingMode = .middle
     var floatingModeBeforeProgressing: FloatingMode = .middle
+    private var offsetBeganDragging: CGPoint = .zero
     
     // MARK: Calculated Properties
     internal var currentFloatingViewController: UIViewController? {
@@ -199,6 +200,7 @@ extension FloatStackController: OverlayViewControllerDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.floatingModeBeforeProgressing = self.currentFloatingMode
         self.transitionCoordinator?.beginFloatViewTranslation()
+        self.offsetBeganDragging = scrollView.contentOffset
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -215,7 +217,8 @@ extension FloatStackController: OverlayViewControllerDelegate {
             targetContentOffset.pointee = .zero
         }
         let translation = scrollView.panGestureRecognizer.translation(in: self.currentFloatingViewController?.view)
-        self.transitionCoordinator?.endFloatViewTranslation(translation, recognizer: scrollView.panGestureRecognizer)
+        let adjustedTranslation = CGPoint(x: translation.x, y: translation.y - offsetBeganDragging.y)
+        self.transitionCoordinator?.endFloatViewTranslation(adjustedTranslation, recognizer: scrollView.panGestureRecognizer)
     }
     
     func shouldTranslateView(following scrollView: UIScrollView) -> Bool {
@@ -228,7 +231,8 @@ extension FloatStackController: OverlayViewControllerDelegate {
         case .fullScreen:
             return offset < 0
         case .bottom:
-            return offset > 0
+            return true
+            //return offset > 0
         case .middle:
             return true
         }
@@ -236,8 +240,9 @@ extension FloatStackController: OverlayViewControllerDelegate {
     
     func translateView(following scrollView: UIScrollView) {
         scrollView.contentOffset = .zero
-        let translation = scrollView.panGestureRecognizer.translation(in: self.currentFloatingViewController?.view)
-        self.transitionCoordinator?.translateFloatView(translation)
+        let translation = scrollView.panGestureRecognizer.translation(in: self.containerViewController.view)
+        let adjustedTranslation = CGPoint(x: translation.x, y: translation.y - offsetBeganDragging.y)
+        self.transitionCoordinator?.translateFloatView(adjustedTranslation)
     }
 }
 
@@ -254,6 +259,10 @@ extension FloatStackController: FloatViewContainerViewControllerDelegate {
 }
 
 extension FloatStackController: FloatViewTransitionCoordinatorDelegate {
+    func didReachToMaximumPosition(_ coordinator: FloatViewTransitionCoordinator) {
+        self.currentFloatingMode = .fullScreen
+    }
+    
     func didChangeBackgroundShadowViewVisibility(_ isHidden: Bool, percentage: Float?) {
         if let percentage = percentage {
             self.containerViewController.shadowView.setShadowVisibility(CGFloat(percentage))

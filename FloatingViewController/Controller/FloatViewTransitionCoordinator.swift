@@ -2,6 +2,7 @@ import UIKit
 
 protocol FloatViewTransitionCoordinatorDelegate: class {
     func didChangeBackgroundShadowViewVisibility(_ isHidden: Bool, percentage: Float?)
+    func didReachToMaximumPosition(_ coordinator: FloatViewTransitionCoordinator)
 }
 
 class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, FloatViewTransitionable {
@@ -67,6 +68,10 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
                     return absolutedTranslationY
                 }
             }()
+            
+            if topSpaceConstant <= fullScreenConstant {
+                delegate?.didReachToMaximumPosition(self)
+            }
             
             // shadow
             if self.stackController?.containerViewController.traitCollection.verticalSizeClass == .regular {
