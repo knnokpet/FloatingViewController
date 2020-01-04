@@ -129,6 +129,7 @@ class FloatStackController: NSObject {
         landscapeTop.isActive = false
         landscapeTop.identifier = "landscape top"
         
+        #warning("trait collection did change のタイミングで left を更新しないといけない")
         let landscapeLeft = viewController.view.leftAnchor.constraint(equalTo: containerViewController.view.leftAnchor, constant: containerViewController.view.safeAreaInsets.top)
         landscapeLeft.isActive = false
         landscapeLeft.identifier = "landscape left"
@@ -136,7 +137,7 @@ class FloatStackController: NSObject {
         let screenPercentage: CGFloat = containerViewController.view.bounds.width / containerViewController.view.bounds.height
         
         let usableHeight: CGFloat = containerViewController.view.bounds.width - (containerViewController.view.safeAreaInsets.left + containerViewController.view.safeAreaInsets.right)
-        let widthConstraint = viewController.view.widthAnchor.constraint(equalToConstant: usableHeight * screenPercentage * 1.4)
+        let widthConstraint = viewController.view.widthAnchor.constraint(equalToConstant: usableHeight * screenPercentage * 1.8)
         widthConstraint.isActive = false
         widthConstraint.identifier = "landscape width"
         

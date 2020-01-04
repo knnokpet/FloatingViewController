@@ -466,38 +466,18 @@ extension FloatViewTransitionCoordinator {
     
     internal func handleTraitcollectionDidChange(_ previousTraitCollection: UITraitCollection?, currentTraitCollection: UITraitCollection) {
         
+        setupViewConfiguration(currentTraitCollection)
+    }
+    
+    func setupViewConfiguration(_ traitCollection: UITraitCollection) {
         guard
             let currentViewController = self.stackController?.currentFloatingViewController
         else { return }
         
         self.updateConstraints()
-        self.updateShadowView(with: currentTraitCollection)
+        self.updateShadowView(with: traitCollection)
         
-        if currentTraitCollection.verticalSizeClass == .compact { // landscape
-            #warning("NOT OPTIMIZED FOR NON FULL EDGE PHONE")
-            
-            self.stackController?.currentParameter?.portraitTopConstraint?.isActive = false
-            self.stackController?.currentParameter?.portraitLeftConstraint?.isActive = false
-            self.stackController?.currentParameter?.portraitRightConstraint?.isActive = false
-            self.stackController?.currentParameter?.portraitBottomConstraint?.isActive = false
-            
-            self.stackController?.currentParameter?.landscapeTopConstraint?.isActive = true
-            self.stackController?.currentParameter?.landscapeLeftConstraint?.isActive = true
-            self.stackController?.currentParameter?.landscapeWidthConstraint?.isActive = true
-            self.stackController?.currentParameter?.landscapeBottomConstraint?.isActive = true
-            
-        } else if currentTraitCollection.verticalSizeClass == .regular { // portrait
-            
-            self.stackController?.currentParameter?.landscapeTopConstraint?.isActive = false
-            self.stackController?.currentParameter?.landscapeLeftConstraint?.isActive = false
-            self.stackController?.currentParameter?.landscapeWidthConstraint?.isActive = false
-            self.stackController?.currentParameter?.landscapeBottomConstraint?.isActive = false
-            
-            self.stackController?.currentParameter?.portraitTopConstraint?.isActive = true
-            self.stackController?.currentParameter?.portraitLeftConstraint?.isActive = true
-            self.stackController?.currentParameter?.portraitRightConstraint?.isActive = true
-            self.stackController?.currentParameter?.portraitBottomConstraint?.isActive = true
-        }
+        activateConstraints(traitCollection)
         
         self.stackController?.containerViewController.view.layoutIfNeeded()
         currentViewController.view.layoutIfNeeded()
@@ -513,6 +493,32 @@ extension FloatViewTransitionCoordinator {
             current.portraitTopConstraint?.constant = constant
             current.landscapeTopConstraint?.constant = constant
             self.stackController?.setCurrentParameter(current)
+        }
+    }
+    
+    private func activateConstraints(_ traitCollection: UITraitCollection) {
+        if traitCollection.verticalSizeClass == .compact { // landscape
+            self.stackController?.currentParameter?.portraitTopConstraint?.isActive = false
+            self.stackController?.currentParameter?.portraitLeftConstraint?.isActive = false
+            self.stackController?.currentParameter?.portraitRightConstraint?.isActive = false
+            self.stackController?.currentParameter?.portraitBottomConstraint?.isActive = false
+            
+            self.stackController?.currentParameter?.landscapeTopConstraint?.isActive = true
+            self.stackController?.currentParameter?.landscapeLeftConstraint?.isActive = true
+            self.stackController?.currentParameter?.landscapeWidthConstraint?.isActive = true
+            self.stackController?.currentParameter?.landscapeBottomConstraint?.isActive = true
+            
+        } else if traitCollection.verticalSizeClass == .regular { // portrait
+            
+            self.stackController?.currentParameter?.landscapeTopConstraint?.isActive = false
+            self.stackController?.currentParameter?.landscapeLeftConstraint?.isActive = false
+            self.stackController?.currentParameter?.landscapeWidthConstraint?.isActive = false
+            self.stackController?.currentParameter?.landscapeBottomConstraint?.isActive = false
+            
+            self.stackController?.currentParameter?.portraitTopConstraint?.isActive = true
+            self.stackController?.currentParameter?.portraitLeftConstraint?.isActive = true
+            self.stackController?.currentParameter?.portraitRightConstraint?.isActive = true
+            self.stackController?.currentParameter?.portraitBottomConstraint?.isActive = true
         }
     }
     
@@ -537,6 +543,10 @@ private final class TopLayoutConstraintCaluculator {
         #warning("NEED TO CHANGE TO PRACTICAL VALUE")
         switch mode {
         case .fullScreen:
+            if container.traitCollection.verticalSizeClass == .compact {
+                debugPrint(container.view.safeAreaInsets)
+                return 20
+            }
             return container.view.safeAreaInsets.top
         case .middle:
             return container.view.bounds.height / 2
