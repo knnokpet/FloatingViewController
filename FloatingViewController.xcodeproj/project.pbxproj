@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F70224A8239A2A83001E655F /* MyTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70224A7239A2A83001E655F /* MyTableView.swift */; };
 		F703AFE222B27241003AE44A /* FloatStackController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE122B27241003AE44A /* FloatStackController.swift */; };
 		F703AFE422B272B8003AE44A /* FloatingViewLayoutConstraintParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE322B272B8003AE44A /* FloatingViewLayoutConstraintParameter.swift */; };
 		F703AFE622B390F6003AE44A /* FloatViewTransitionObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F703AFE522B390F6003AE44A /* FloatViewTransitionObservable.swift */; };
@@ -16,7 +15,6 @@
 		F731DF1F238BACBB00455A97 /* FloatViewNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F731DF1E238BACBB00455A97 /* FloatViewNotification.swift */; };
 		F78D61CC2391249E00993942 /* FloatingNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78D61CB2391249E00993942 /* FloatingNavigationController.swift */; };
 		F78D61CE239126AB00993942 /* Floatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78D61CD239126AB00993942 /* Floatable.swift */; };
-		F78D61D22393656D00993942 /* MyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78D61D12393656D00993942 /* MyTableViewController.swift */; };
 		F78D61D62393FA5800993942 /* FloatingNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78D61D52393FA5800993942 /* FloatingNavigationView.swift */; };
 		F78D61DA239505DB00993942 /* TextFieldNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78D61D9239505DB00993942 /* TextFieldNavigationView.swift */; };
 		F792360E239E801B00251544 /* OverlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F792360D239E801B00251544 /* OverlayViewController.swift */; };
@@ -31,12 +29,9 @@
 		F7AFB7FA22A3A14900DE2D44 /* FloatStackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7F922A3A14900DE2D44 /* FloatStackViewController.swift */; };
 		F7AFB7FC22A3A18500DE2D44 /* FloatStackViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AFB7FB22A3A18500DE2D44 /* FloatStackViewController.storyboard */; };
 		F7AFB7FE22A3AABF00DE2D44 /* FloatingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7FD22A3AABF00DE2D44 /* FloatingViewController.swift */; };
-		F7AFB80022A3AE6C00DE2D44 /* TestTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AFB7FF22A3AE6C00DE2D44 /* TestTableViewController.swift */; };
-		F7AFB80222A3AE8A00DE2D44 /* TestTableViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AFB80122A3AE8A00DE2D44 /* TestTableViewController.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F70224A7239A2A83001E655F /* MyTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTableView.swift; sourceTree = "<group>"; };
 		F703AFE122B27241003AE44A /* FloatStackController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatStackController.swift; sourceTree = "<group>"; };
 		F703AFE322B272B8003AE44A /* FloatingViewLayoutConstraintParameter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingViewLayoutConstraintParameter.swift; sourceTree = "<group>"; };
 		F703AFE522B390F6003AE44A /* FloatViewTransitionObservable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewTransitionObservable.swift; sourceTree = "<group>"; };
@@ -45,7 +40,6 @@
 		F731DF1E238BACBB00455A97 /* FloatViewNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewNotification.swift; sourceTree = "<group>"; };
 		F78D61CB2391249E00993942 /* FloatingNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNavigationController.swift; sourceTree = "<group>"; };
 		F78D61CD239126AB00993942 /* Floatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Floatable.swift; sourceTree = "<group>"; };
-		F78D61D12393656D00993942 /* MyTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTableViewController.swift; sourceTree = "<group>"; };
 		F78D61D52393FA5800993942 /* FloatingNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNavigationView.swift; sourceTree = "<group>"; };
 		F78D61D9239505DB00993942 /* TextFieldNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNavigationView.swift; sourceTree = "<group>"; };
 		F792360D239E801B00251544 /* OverlayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayViewController.swift; sourceTree = "<group>"; };
@@ -62,8 +56,6 @@
 		F7AFB7F922A3A14900DE2D44 /* FloatStackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatStackViewController.swift; sourceTree = "<group>"; };
 		F7AFB7FB22A3A18500DE2D44 /* FloatStackViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = FloatStackViewController.storyboard; sourceTree = "<group>"; };
 		F7AFB7FD22A3AABF00DE2D44 /* FloatingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingViewController.swift; sourceTree = "<group>"; };
-		F7AFB7FF22A3AE6C00DE2D44 /* TestTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTableViewController.swift; sourceTree = "<group>"; };
-		F7AFB80122A3AE8A00DE2D44 /* TestTableViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TestTableViewController.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,11 +109,7 @@
 		F78D61D82395033D00993942 /* TestClasses */ = {
 			isa = PBXGroup;
 			children = (
-				F7AFB7FF22A3AE6C00DE2D44 /* TestTableViewController.swift */,
-				F7AFB80122A3AE8A00DE2D44 /* TestTableViewController.storyboard */,
-				F78D61D12393656D00993942 /* MyTableViewController.swift */,
 				F78D61D9239505DB00993942 /* TextFieldNavigationView.swift */,
-				F70224A7239A2A83001E655F /* MyTableView.swift */,
 				F792360D239E801B00251544 /* OverlayViewController.swift */,
 			);
 			path = TestClasses;
@@ -226,7 +214,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7AFB7F222A39CB300DE2D44 /* LaunchScreen.storyboard in Resources */,
-				F7AFB80222A3AE8A00DE2D44 /* TestTableViewController.storyboard in Resources */,
 				F7AFB7FC22A3A18500DE2D44 /* FloatStackViewController.storyboard in Resources */,
 				F7AFB7EF22A39CB300DE2D44 /* Assets.xcassets in Resources */,
 				F7AFB7ED22A39CB100DE2D44 /* Main.storyboard in Resources */,
@@ -253,12 +240,9 @@
 				F792360E239E801B00251544 /* OverlayViewController.swift in Sources */,
 				F703AFE422B272B8003AE44A /* FloatingViewLayoutConstraintParameter.swift in Sources */,
 				F703AFE822B39115003AE44A /* FloatViewTransitionable.swift in Sources */,
-				F7AFB80022A3AE6C00DE2D44 /* TestTableViewController.swift in Sources */,
 				F7AFB7EA22A39CB100DE2D44 /* ViewController.swift in Sources */,
 				F7AFB7FE22A3AABF00DE2D44 /* FloatingViewController.swift in Sources */,
 				F7AFB7E822A39CB100DE2D44 /* AppDelegate.swift in Sources */,
-				F70224A8239A2A83001E655F /* MyTableView.swift in Sources */,
-				F78D61D22393656D00993942 /* MyTableViewController.swift in Sources */,
 				F792361223A0A67900251544 /* FloatViewContainerViewController.swift in Sources */,
 				F703AFE622B390F6003AE44A /* FloatViewTransitionObservable.swift in Sources */,
 			);

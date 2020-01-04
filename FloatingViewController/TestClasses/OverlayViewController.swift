@@ -1,5 +1,9 @@
 import UIKit
 
+class MyMyCell: UITableViewCell {
+    
+}
+
 protocol OverlayViewControllerDelegate: class {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
     func scrollViewDidScroll(_ scrollView: UIScrollView)

@@ -65,8 +65,8 @@ class FloatingNavigationController: UINavigationController, Floatable {
     @objc func keyboardWillShow(_ notification: Notification) {
         let duration = notification.userInfo?[UIWindow.keyboardAnimationDurationUserInfoKey]
         let info: [AnyHashable: Any] = {
-            var dict: [AnyHashable: Any] = [FloatNotificationProperty.mode: FloatingMode.fullScreen]
-            if let duration = duration {
+            let dict: [AnyHashable: Any] = [FloatNotificationProperty.mode: FloatingMode.fullScreen]
+            if let _ = duration {
                 // too fast. 
                 //dict[FloatNotificationProperty.duration] = duration
             }
