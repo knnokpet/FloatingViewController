@@ -544,8 +544,7 @@ private final class TopLayoutConstraintCaluculator {
         switch mode {
         case .fullScreen:
             if container.traitCollection.verticalSizeClass == .compact {
-                debugPrint(container.view.safeAreaInsets)
-                return 20
+                return container.view.safeAreaInsets.right / 2
             }
             return container.view.safeAreaInsets.top
         case .middle:

@@ -129,14 +129,33 @@ class FloatStackController: NSObject {
         landscapeTop.isActive = false
         landscapeTop.identifier = "landscape top"
         
-        #warning("trait collection did change のタイミングで left を更新しないといけない")
-        let landscapeLeft = viewController.view.leftAnchor.constraint(equalTo: containerViewController.view.leftAnchor, constant: containerViewController.view.safeAreaInsets.top)
+        let landscapeLeftConstant: CGFloat = {
+            if containerViewController.view.traitCollection.verticalSizeClass == .compact {
+                return containerViewController.view.safeAreaInsets.left
+            } else {
+                return containerViewController.view.safeAreaInsets.top
+            }
+        }()
+        let landscapeLeft = viewController.view.leftAnchor.constraint(equalTo: containerViewController.view.leftAnchor, constant: landscapeLeftConstant)
         landscapeLeft.isActive = false
         landscapeLeft.identifier = "landscape left"
-
-        let screenPercentage: CGFloat = containerViewController.view.bounds.width / containerViewController.view.bounds.height
         
-        let usableHeight: CGFloat = containerViewController.view.bounds.width - (containerViewController.view.safeAreaInsets.left + containerViewController.view.safeAreaInsets.right)
+        let screenPercentage: CGFloat = {
+            if containerViewController.view.traitCollection.verticalSizeClass == .compact {
+                return containerViewController.view.bounds.height / containerViewController.view.bounds.width
+            } else {
+                return containerViewController.view.bounds.width / containerViewController.view.bounds.height
+            }
+        }()
+        
+        let usableHeight: CGFloat = {
+            if containerViewController.view.traitCollection.verticalSizeClass == .compact {
+                return containerViewController.view.bounds.height
+            } else {
+                return containerViewController.view.bounds.width
+            }
+        }()
+        
         let widthConstraint = viewController.view.widthAnchor.constraint(equalToConstant: usableHeight * screenPercentage * 1.8)
         widthConstraint.isActive = false
         widthConstraint.identifier = "landscape width"
@@ -149,7 +168,7 @@ class FloatStackController: NSObject {
         let parameter = FloatingViewLayoutConstraintParameter(portraitTopConstraint: topSpaceConstraint, portraitLeftConstraint: left, portraitRightConstraint: right, portraitBottomConstraint: bottom, landscapeTopConstraint: landscapeTop, landscapeLeftConstraint: landscapeLeft, landscapeWidthConstraint: widthConstraint, landscapeBottomConstraint: landscapeBottom)
 
         self.add(viewController: viewController, parameter: parameter)
-        
+                self.transitionCoordinator?.setupViewConfiguration(containerViewController.traitCollection)
         
         viewController.didMove(toParent: containerViewController)
         
