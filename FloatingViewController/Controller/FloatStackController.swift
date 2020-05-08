@@ -4,9 +4,6 @@ public enum FloatingMode {
     case fullScreen, middle, bottom, progressing
 }
 
-let tallerHeight: CGFloat = 360
-let shorterHeight: CGFloat = 120
-
 class FloatStackController: NSObject {
     
     // MARK: - Properties

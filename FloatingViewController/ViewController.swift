@@ -2,8 +2,6 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let tallerHeight: CGFloat = 360
-    let shorterHeight: CGFloat = 120
     
     var floatStackViewController: FloatStackViewController?
     var floatStackController: FloatStackController!// = FloatStackController(parentViewController: self)
