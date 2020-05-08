@@ -2,8 +2,6 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let tallerHeight: CGFloat = 360
-    let shorterHeight: CGFloat = 120
     
     var floatStackViewController: FloatStackViewController?
     var floatStackController: FloatStackController!// = FloatStackController(parentViewController: self)
@@ -14,8 +12,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let parent: UIViewController = self.parent ?? self
-        self.floatStackController = FloatStackController(parentViewController: parent)
+        self.floatStackController = FloatStackController(parentViewController: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -39,25 +36,19 @@ class ViewController: UIViewController {
     
     @IBAction func show(_ sender: Any) {
         
-        let test = UIStoryboard(name: "TestTableViewController", bundle: nil).instantiateInitialViewController() as! TestTableViewController
-        test.title = "今日も"
-        let number = self.floatStackController.numberOfViewControllers
-        test.number = number
-        
-        let nav = FloatingNavigationController(rootViewController: MyTableViewController())
-        self.floatStackController.add(childViewController: nav)
+        self.floatStackController.add(childViewController: OverlayViewController())
     }
     
     @IBAction func moveToMiddle(_ sender: Any) {
-        self.floatStackController.transitionCoordinator?.move(mode: .middle)
+        self.floatStackController.transitionCoordinator?.move(mode: .middle, recognizer: nil, velocity: nil, duration: nil)
     }
     
     @IBAction func moveToFullScreen(_ sender: Any) {
-        self.floatStackController.transitionCoordinator?.move(mode: .fullScreen)
+        self.floatStackController.transitionCoordinator?.move(mode: .fullScreen, recognizer: nil, velocity: nil, duration: nil)
     }
     
     @IBAction func moveTobottom(_ sender: Any) {
-        self.floatStackController.transitionCoordinator?.move(mode: .bottom)
+        self.floatStackController.transitionCoordinator?.move(mode: .bottom, recognizer: nil, velocity: nil, duration: nil)
     }
     
 }
