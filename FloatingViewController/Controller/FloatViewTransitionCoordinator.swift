@@ -466,17 +466,35 @@ extension FloatViewTransitionCoordinator {
     
     internal func handleTraitcollectionDidChange(_ previousTraitCollection: UITraitCollection?, currentTraitCollection: UITraitCollection) {
         
-        setupViewConfiguration(currentTraitCollection)
+        updateViewConfiguration(currentTraitCollection)
     }
     
+    
+    /// Set up Float View
+    /// - Parameters:
+    ///   - traitCollection: To set up shadow view and constraint activations
     func setupViewConfiguration(_ traitCollection: UITraitCollection) {
+        guard
+            let currentViewController = self.stackController?.currentFloatingViewController
+        else { return }
+
+        self.updateShadowView(with: traitCollection)
+        activateConstraints(traitCollection)
+        
+        self.stackController?.containerViewController.view.layoutIfNeeded()
+        currentViewController.view.layoutIfNeeded()
+    }
+    
+    
+    /// Update Float View Constraints, shadow
+    /// - Parameter traitCollection: To update shadow view and  constraint activations
+    func updateViewConfiguration(_ traitCollection: UITraitCollection) {
         guard
             let currentViewController = self.stackController?.currentFloatingViewController
         else { return }
         
         self.updateConstraints()
         self.updateShadowView(with: traitCollection)
-        
         activateConstraints(traitCollection)
         
         self.stackController?.containerViewController.view.layoutIfNeeded()
