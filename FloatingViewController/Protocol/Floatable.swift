@@ -7,6 +7,8 @@ protocol Floatable where Self: UIViewController {
     func setupViews()
     func configureGesture()
     
+    func panGesture() -> UIPanGestureRecognizer?
+    
     func dismissFloatViewController()
     func move(_ info: [AnyHashable: Any]?)
     
@@ -14,6 +16,7 @@ protocol Floatable where Self: UIViewController {
 
 private let cornerRadius: CGFloat = 12.0
 private let hairLineWidth: CGFloat = 0.2
+private let panGestureName: String = "pan_gesture_recognizer_to_translate"
 
 // MARK: Configure View
 extension Floatable {
@@ -60,7 +63,14 @@ extension Floatable {
     
     func configureGesture() {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanning(_:)))
+        panGestureRecognizer.name = panGestureName
         self.view.addGestureRecognizer(panGestureRecognizer)
+    }
+    
+    func panGesture() -> UIPanGestureRecognizer? {
+        return self.view.gestureRecognizers?.first(where: { (gesture) -> Bool in
+            gesture.name == panGestureName
+        }) as? UIPanGestureRecognizer
     }
     
     func dismissFloatViewController() {

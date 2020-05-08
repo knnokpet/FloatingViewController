@@ -45,6 +45,8 @@ class OverlayViewController: UIViewController, Floatable, UITableViewDelegate, U
         self.tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         
         setupViews()
+        
+        panGesture()?.delegate = self
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -75,5 +77,14 @@ class OverlayViewController: UIViewController, Floatable, UITableViewDelegate, U
                                    withVelocity velocity: CGPoint,
                                    targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         delegate?.scrollView(scrollView, willEndScrollingWithVelocity: velocity, targetContentOffset: targetContentOffset)
+    }
+}
+
+extension OverlayViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UIButton {
+            return false
+        }
+        return true
     }
 }
