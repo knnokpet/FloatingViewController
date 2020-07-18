@@ -186,24 +186,49 @@ class FloatStackController: NSObject {
         self.parameters.insert(parameter, at: 0)
     }
     
+    private var removeProcessedViewControllers: Set<UIViewController> = []
+    private var removeProcessedParameters: Set<FloatingViewLayoutConstraintParameter> = []
+    
     @objc internal func removeCurrentViewController() {
-
+        
         guard
             self.viewControllers.count > 0,
             self.parameters.count > 0
-            else
+        else
         { return }
         
-        self.transitionCoordinator?.remove(completionHandler: { (isFinished) in
-            if isFinished {
-                self.viewControllers[0].willMove(toParent: nil)
-                self.viewControllers[0].view.removeFromSuperview()
-                self.viewControllers[0].removeFromParent()
-                self.viewControllers.remove(at: 0)
-                self.parameters.remove(at: 0)
-            }
+        let viewController = self.viewControllers[0]
+        viewController.willMove(toParent: nil)
+        let parameter = self.parameters[0]
+        
+        let previous: UIViewController? = {
+            let index = 1
+            guard self.viewControllers.count > index else { return nil }
             
+            return viewControllers[1]
+            
+        }()
+        
+        removeProcessedViewControllers.insert(viewController)
+        removeProcessedParameters.insert(parameter)
+        
+        self.viewControllers.remove(at: 0)
+        self.parameters.remove(at: 0)
+        
+        self.transitionCoordinator?.remove(viewController, parameter: parameter, previousViewController: previous, completionHandler: { (isFinished) in
+            if isFinished {
+                if let index = self.removeProcessedParameters.firstIndex(of: parameter) {
+                    self.removeProcessedParameters.remove(at: index)
+                }
+                if
+                    self.removeProcessedViewControllers.contains(viewController),
+                    let index = self.removeProcessedViewControllers.firstIndex(of: viewController)
+                {
+                    self.removeProcessedViewControllers.remove(at: index)
+                }
+            }
         })
+        
     }
     
     @objc internal func move(_ notification: Notification) {

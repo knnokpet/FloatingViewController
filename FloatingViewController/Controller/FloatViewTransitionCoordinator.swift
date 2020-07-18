@@ -421,6 +421,38 @@ class FloatViewTransitionCoordinator: NSObject, FloatViewTransitionObservable, F
         })
     }
     
+    func remove(_ viewController: UIViewController, parameter: FloatingViewLayoutConstraintParameter, previousViewController: UIViewController?, completionHandler: ((Bool) -> Void)?) {
+        
+        guard let container = self.stackController?.containerViewController else { return }
+        
+        // By calling layoutIfNeeded at once, let view layout be confirmed
+        self.stackController?.containerViewController.view.layoutIfNeeded()
+        
+        parameter.activeTopConstraint?.constant = container.view.bounds.height
+        
+        // Show Previous View Controller behind Current
+        if let previousViewController = previousViewController as? Floatable {
+            previousViewController.shadowView.isHiddenShadowView = false
+            previousViewController.view.layer.opacity = 1.0
+            UIView.animate(withDuration: 0.3, animations: {
+                previousViewController.shadowView.isHiddenShadowView = true
+            }, completion: nil)
+        }
+        
+        // Dismiss Current View Controller
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [], animations: {
+            self.stackController?.containerViewController.view.layoutIfNeeded()
+            
+            if self.stackController?.containerViewController.traitCollection.verticalSizeClass == .regular {
+                self.delegate?.didChangeBackgroundShadowViewVisibility(true, percentage: nil)
+            }
+            
+        }, completion: { finished in
+            completionHandler?(finished)
+        })
+        
+    }
+    
     func remove(completionHandler: ((Bool) -> Void)?) {
         
         guard

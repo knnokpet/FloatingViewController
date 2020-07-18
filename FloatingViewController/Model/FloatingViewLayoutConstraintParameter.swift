@@ -1,6 +1,16 @@
 import UIKit
 
-struct FloatingViewLayoutConstraintParameter {
+struct FloatingViewLayoutConstraintParameter: Hashable {
+    
+    private let identifier = UUID()
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    
+    static func == (lhs: FloatingViewLayoutConstraintParameter, rhs: FloatingViewLayoutConstraintParameter) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+    
     internal var floatingViewHeightConstraint: NSLayoutConstraint?
     
     internal var portraitTopConstraint: NSLayoutConstraint? = nil
